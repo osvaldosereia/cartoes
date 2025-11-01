@@ -216,11 +216,192 @@
                     <label for="percentualComissao" class="block text-sm font-medium text-gray-700">% Comissão *</label>
                     <input type="number" id="percentualComissao" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: 10.5">
                 </div>
+                <div>
+                    <label for="saldoInicial" class="block text-sm font-medium text-gray-700">Saldo Inicial (R$)</label>
+                    <input type="number" id="saldoInicial" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Opcional. Ex: 150.00">
+                </div>
                 
+                <!-- Novos campos de Pix -->
+                <div class="col-span-full sm:col-span-1">
+                    <label for="tipoPix" class="block text-sm font-medium text-gray-700">Tipo Chave Pix</label>
+                    <select id="tipoPix" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Nenhuma</option>
+                        <option value="celular">Celular</option>
+                        <option value="cpf_cnpj">CPF/CNPJ</option>
+                        <option value="email">Email</option>
+                        <option value="aleatoria">Aleatória</option>
+                    </select>
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="chavePix" class="block text-sm font-medium text-gray-700">Chave Pix</label>
+                    <input type="text" id="chavePix" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- Novos campos de Endereço -->
+                <div class="col-span-full">
+                    <h3 class="text-md font-medium text-gray-700 mt-4 border-t pt-4">Endereço</h3>
+                </div>
+
+                <div class="col-span-full sm:col-span-1">
+                    <label for="cep" class="block text-sm font-medium text-gray-700">CEP</label>
+                    <input type="text" id="cep" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="logradouro" class="block text-sm font-medium text-gray-700">Logradouro</label>
+                    <input type="text" id="logradouro" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="numero" class="block text-sm font-medium text-gray-700">Número</label>
+                    <input type="text" id="numero" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="complemento" class="block text-sm font-medium text-gray-700">Complemento</label>
+                    <input type="text" id="complemento" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="bairro" class="block text-sm font-medium text-gray-700">Bairro</label>
+                    <input type="text" id="bairro" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="cidade" class="block text-sm font-medium text-gray-700">Cidade</label>
+                    <input type="text" id="cidade" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="estado" class="block text-sm font-medium text-gray-700">Estado</label>
+                    <input type="text" id="estado" maxlength="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: SP">
+                </div>
+
                 <!-- Botão de Envio -->
                 <div class="col-span-full flex justify-end mt-4">
                     <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         Salvar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: EDITAR Cliente (NOVO) -->
+    <div id="edit-cliente-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg m-4 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-gray-800">Editar Cliente</h2>
+                <button id="close-edit-cliente-modal" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <!-- O formulário é idêntico ao de novo cliente, mas com IDs diferentes para os campos -->
+            <form id="edit-cliente-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="hidden" id="edit-cliente-id">
+                
+                <!-- Coluna 1 -->
+                <div>
+                    <label for="edit-nome" class="block text-sm font-medium text-gray-700">Nome *</label>
+                    <input type="text" id="edit-nome" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="edit-telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
+                    <input type="tel" id="edit-telefone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="edit-empresa" class="block text-sm font-medium text-gray-700">Empresa</label>
+                    <input type="text" id="edit-empresa" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                 <div>
+                    <label for="edit-senha" class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input type="text" id="edit-senha" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                
+                <!-- Coluna 2 -->
+                <div>
+                    <label for="edit-bandeira" class="block text-sm font-medium text-gray-700">Bandeira</label>
+                    <select id="edit-bandeira" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Selecione...</option>
+                        <option value="ALELO">ALELO</option>
+                        <option value="SODEXO/PLUXEE">SODEXO/PLUXEE</option>
+                        <option value="VR">VR</option>
+                        <option value="CABAL">CABAL</option>
+                        <option value="TICKET">TICKET</option>
+                        <option value="R6">R6</option>
+                        <option value="FLASH">FLASH</option>
+                        <option value="IFOOD">IFOOD</option>
+                        <option value="HEINEKEN">HEINEKEN</option>
+                        <option value="Outra">Outra</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-vendedor" class="block text-sm font-medium text-gray-700">Vendedor</label>
+                    <select id="edit-vendedor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Selecione...</option>
+                        <option value="Osvaldo">Osvaldo</option>
+                        <option value="Lucas">Lucas</option>
+                        <option value="Claudenil">Claudenil</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-percentualComissao" class="block text-sm font-medium text-gray-700">% Comissão *</label>
+                    <input type="number" id="edit-percentualComissao" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: 10.5">
+                </div>
+                <div>
+                    <label for="edit-saldoInicial" class="block text-sm font-medium text-gray-700">Saldo Inicial (R$)</label>
+                    <input type="number" id="edit-saldoInicial" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Opcional. Ex: 150.00">
+                </div>
+                
+                <!-- Campos de Pix -->
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-tipoPix" class="block text-sm font-medium text-gray-700">Tipo Chave Pix</label>
+                    <select id="edit-tipoPix" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">Nenhuma</option>
+                        <option value="celular">Celular</option>
+                        <option value="cpf_cnpj">CPF/CNPJ</option>
+                        <option value="email">Email</option>
+                        <option value="aleatoria">Aleatória</option>
+                    </select>
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-chavePix" class="block text-sm font-medium text-gray-700">Chave Pix</label>
+                    <input type="text" id="edit-chavePix" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- Campos de Endereço -->
+                <div class="col-span-full">
+                    <h3 class="text-md font-medium text-gray-700 mt-4 border-t pt-4">Endereço</h3>
+                </div>
+
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-cep" class="block text-sm font-medium text-gray-700">CEP</label>
+                    <input type="text" id="edit-cep" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-logradouro" class="block text-sm font-medium text-gray-700">Logradouro</label>
+                    <input type="text" id="edit-logradouro" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-numero" class="block text-sm font-medium text-gray-700">Número</label>
+                    <input type="text" id="edit-numero" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-complemento" class="block text-sm font-medium text-gray-700">Complemento</label>
+                    <input type="text" id="edit-complemento" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-bairro" class="block text-sm font-medium text-gray-700">Bairro</label>
+                    <input type="text" id="edit-bairro" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-cidade" class="block text-sm font-medium text-gray-700">Cidade</label>
+                    <input type="text" id="edit-cidade" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div class="col-span-full sm:col-span-1">
+                    <label for="edit-estado" class="block text-sm font-medium text-gray-700">Estado</label>
+                    <input type="text" id="edit-estado" maxlength="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: SP">
+                </div>
+
+                <!-- Botão de Envio -->
+                <div class="col-span-full flex justify-end mt-4">
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Atualizar Cliente
                     </button>
                 </div>
             </form>
@@ -269,6 +450,80 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal: EDITAR Transação (NOVO) -->
+    <div id="edit-transacao-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-gray-800">Editar Transação</h2>
+                <button id="close-edit-transacao-modal" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="edit-transacao-form" class="space-y-4">
+                <input type="hidden" id="edit-transacao-cliente-id">
+                <input type="hidden" id="edit-transacao-id">
+                
+                <div>
+                    <label for="edit-transacao-tipo" class="block text-sm font-medium text-gray-700">Tipo *</label>
+                    <select id="edit-transacao-tipo" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="entrada">Entrada (Crédito)</option>
+                        <option value="saida">Saída (Uso)</option>
+                    </select>
+                </div>
+                
+                <div id="edit-loja-input-container" class="hidden"> <!-- Campo Loja (inicia oculto) -->
+                    <label for="edit-transacao-loja" class="block text-sm font-medium text-gray-700">Loja *</label>
+                    <input type="text" id="edit-transacao-loja" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label for="edit-transacao-data" class="block text-sm font-medium text-gray-700">Data *</label>
+                    <input type="date" id="edit-transacao-data" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label for="edit-transacao-valor" class="block text-sm font-medium text-gray-700">Valor (R$) *</label>
+                    <input type="number" id="edit-transacao-valor" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div class="flex justify-end mt-4">
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Atualizar Transação
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Opções WhatsApp -->
+    <div id="whatsapp-options-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm m-4 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-gray-800">WhatsApp para <span id="whatsapp-cliente-nome" class="font-bold">...</span></h2>
+                <button id="close-whatsapp-options-modal" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <p class="text-sm text-gray-600">Selecione uma mensagem pré-definida para enviar.</p>
+                <button 
+                    id="btn-whatsapp-extrato"
+                    class="w-full inline-flex justify-center items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                >
+                    <i data-lucide="list-check" class="w-5 h-5 mr-2"></i>
+                    Pedir print do extrato
+                </button>
+                <button 
+                    id="btn-whatsapp-pix"
+                    class="w-full inline-flex justify-center items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                >
+                    <i data-lucide="key-round" class="w-5 h-5 mr-2"></i>
+                    Confirmar dados do Pix
+                </button>
+            </div>
         </div>
     </div>
 
@@ -376,94 +631,18 @@
         function render() {
             console.log(`Renderizando com filtros: Nome='${searchQuery}', Bandeira='${filtroBandeira}', Vendedor='${filtroVendedor}', Ordem='${criterioOrdenacao}'`);
             
-            // A ordenação por nome padrão foi movida para dentro de renderClientCards
-            
-            renderEstatisticas();
-            renderClientCards();
-            
-            // Recria os ícones
-            if (window.lucide) {
-                window.lucide.createIcons();
-            }
-        }
-
-        function calculateAllStats() {
-            let totalSaldo = 0;
-            let totalComissao = 0;
-            
-            for (const cliente of clientes) {
-                const stats = calculateClientStats(cliente.id);
-                totalSaldo += stats.saldoAtual;
-                totalComissao += stats.totalComissao;
-            }
-            
-            return {
-                totalSaldo,
-                totalComissao,
-                qtdClientes: clientes.length
-            };
-        }
-        
-        function calculateClientStats(clienteId) {
-            const cliente = clientes.find(c => c.id === clienteId);
-            const txs = transacoes.get(clienteId) || [];
-            
-            let totalEntradas = 0;
-            let totalSaidas = 0;
-            let totalComissao = 0;
-            const percentualComissao = cliente ? (cliente.percentualComissao || 0) / 100 : 0;
-            
-            txs.forEach(t => {
-                const valor = t.valor || 0;
-                if (t.tipo === 'entrada') {
-                    totalEntradas += valor;
-                    totalComissao += valor * percentualComissao;
-                } else if (t.tipo === 'saida') {
-                    totalSaidas += valor;
-                }
-            });
-            
-            const saldoAtual = totalEntradas - totalSaidas;
-            return { saldoAtual, totalComissao, totalEntradas, totalSaidas };
-        }
-        
-        function renderEstatisticas() {
-            const statsContainer = document.getElementById('stats-header');
-            const { totalSaldo, totalComissao, qtdClientes } = calculateAllStats();
-            
-            const saldoTotalGeral = clientes.reduce((acc, cliente) => {
-                return acc + calculateClientStats(cliente.id).saldoAtual;
-            }, 0);
-
-            statsContainer.innerHTML = `
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h3 class="text-sm font-medium text-gray-500 truncate">Qtd. Clientes</h3>
-                    <p class="mt-1 text-3xl font-semibold text-gray-900">${qtdClientes}</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h3 class="text-sm font-medium text-gray-500 truncate">Saldo Total (Atual)</h3>
-                    <p class="mt-1 text-3xl font-semibold text-gray-900">${formatCurrency(saldoTotalGeral)}</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow-md">
-                    <h3 class="text-sm font-medium text-gray-500 truncate">Total Comissões (Entradas)</h3>
-                    <p class="mt-1 text-3xl font-semibold text-gray-900">${formatCurrency(totalComissao)}</p>
-                </div>
-            `;
-        }
-        
-        function renderClientCards() {
-            const container = document.getElementById('client-cards-container');
-            const loadingMsg = document.getElementById('loading-message');
-            
-            // Lógica de filtragem combinada
+            // 1. Filtrar
             const filteredClientes = clientes.filter(c => {
                 const matchNome = c.nome.toLowerCase().includes(searchQuery.toLowerCase());
                 const matchBandeira = (filtroBandeira === '') || (c.bandeira === filtroBandeira);
                 const matchVendedor = (filtroVendedor === '') || (c.vendedor === filtroVendedor);
                 return matchNome && matchBandeira && matchVendedor;
             });
+
+            // 2. Renderizar Estatísticas (COM BASE NOS FILTROS)
+            renderEstatisticas(filteredClientes);
             
-            // --- Lógica de Ordenação ---
+            // 3. Ordenar (COM BASE NOS FILTROS)
             filteredClientes.sort((a, b) => {
                 switch (criterioOrdenacao) {
                     case 'nome':
@@ -483,7 +662,83 @@
                         return a.nome.localeCompare(b.nome);
                 }
             });
-            // --- Fim da Lógica de Ordenação ---
+
+            // 4. Renderizar Cards (COM BASE NOS FILTROS E ORDEM)
+            renderClientCards(filteredClientes);
+            
+            // Recria os ícones
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        function calculateAllStats(clientesParaCalcular) {
+            let totalSaldo = 0;
+            let totalComissao = 0;
+            
+            for (const cliente of clientesParaCalcular) {
+                const stats = calculateClientStats(cliente.id);
+                totalSaldo += stats.saldoAtual;
+                totalComissao += stats.totalComissao;
+            }
+            
+            return {
+                totalSaldo,
+                totalComissao,
+                qtdClientes: clientesParaCalcular.length
+            };
+        }
+        
+        function calculateClientStats(clienteId) {
+            const cliente = clientes.find(c => c.id === clienteId);
+            const txs = transacoes.get(clienteId) || [];
+            
+            let totalEntradas = 0;
+            let totalSaidas = 0;
+            let totalComissao = 0;
+            const saldoInicial = cliente ? (cliente.saldoInicial || 0) : 0; // Pega o saldo inicial
+            const percentualComissao = cliente ? (cliente.percentualComissao || 0) / 100 : 0;
+            
+            txs.forEach(t => {
+                const valor = t.valor || 0;
+                if (t.tipo === 'entrada') {
+                    totalEntradas += valor;
+                    totalComissao += valor * percentualComissao;
+                } else if (t.tipo === 'saida') {
+                    totalSaidas += valor;
+                }
+            });
+            
+            const saldoAtual = saldoInicial + totalEntradas - totalSaidas; // Ajusta o cálculo do saldo
+            return { saldoAtual, totalComissao, totalEntradas, totalSaidas };
+        }
+        
+        function renderEstatisticas(clientesParaCalcular) {
+            const statsContainer = document.getElementById('stats-header');
+            // Calcula stats com base na lista filtrada
+            const { totalSaldo, totalComissao, qtdClientes } = calculateAllStats(clientesParaCalcular);
+
+            statsContainer.innerHTML = `
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Qtd. Clientes (Filtro)</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${qtdClientes}</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Saldo Total (Filtro)</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${formatCurrency(totalSaldo)}</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Total Comissões (Filtro)</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${formatCurrency(totalComissao)}</p>
+                </div>
+            `;
+        }
+        
+        function renderClientCards(filteredClientes) {
+            const container = document.getElementById('client-cards-container');
+            const loadingMsg = document.getElementById('loading-message');
+            
+            // A lógica de filtragem e ordenação foi movida para a função render()
             
             console.log(`Exibindo ${filteredClientes.length} de ${clientes.length} clientes ordenados por ${criterioOrdenacao}.`);
             
@@ -516,9 +771,17 @@
                                     <p class="text-sm text-gray-500">Vendedor: <span class="font-medium text-gray-700">${cliente.vendedor || 'N/A'}</span></p>
                                     <p class="text-sm text-gray-500">Senha: <span class="font-medium text-gray-700">${cliente.senha || 'N/A'}</span></p>
                                 </div>
-                                <button onclick="deleteClienteLocal('${cliente.id}', '${cliente.nome}')" class="text-gray-400 hover:text-red-600" title="Excluir Cliente">
-                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
-                                </button>
+                                <div class="flex flex-col gap-2"> <!-- Container para ícones -->
+                                    <button onclick="showWhatsAppModal('${cliente.id}')" class="text-gray-400 hover:text-green-600" title="Enviar WhatsApp">
+                                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                                    </button>
+                                    <button onclick="showEditClienteModal('${cliente.id}')" class="text-gray-400 hover:text-blue-600" title="Editar Cliente">
+                                        <i data-lucide="file-edit" class="w-5 h-5"></i>
+                                    </button>
+                                    <button onclick="deleteClienteLocal('${cliente.id}', '${cliente.nome}')" class="text-gray-400 hover:text-red-600" title="Excluir Cliente">
+                                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                    </button>
+                                </div>
                             </div>
                             
                             <!-- Stats do Cliente -->
@@ -558,6 +821,15 @@
                             <!-- Lista de Transações (Extrato) - Oculta por padrão -->
                             <div id="extrato-lista-${cliente.id}" class="extrato-lista">
                                 <h4 class="text-md font-semibold mb-2 text-gray-700">Últimas Transações</h4>
+                                
+                                <button 
+                                    onclick="exportarExtratoCSV('${cliente.id}', '${cliente.nome}')"
+                                    class="w-full inline-flex justify-center items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 mb-3"
+                                >
+                                    <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-2"></i>
+                                    Exportar Extrato (CSV)
+                                </button>
+
                                 <div class="border rounded-md divide-y divide-gray-200">
                                     ${renderTransactions(txs, cliente.id)}
                                 </div>
@@ -593,30 +865,36 @@
                     </div>
                     <div class="text-right">
                         <p class="text-sm font-semibold ${color}">${sign} ${formatCurrency(t.valor)}</p>
-                        <button onclick="deleteTransacaoLocal('${clienteId}', '${t.id}')" class="text-gray-400 hover:text-red-600 text-xs" title="Excluir Transação">
-                           Excluir
-                        </button>
+                        <div class="flex gap-2 justify-end">
+                            <button onclick="showEditTransacaoModal('${clienteId}', '${t.id}')" class="text-gray-400 hover:text-blue-600 text-xs" title="Editar Transação">
+                               <i data-lucide="edit-3" class="w-3 h-3"></i>
+                            </button> <!-- CORRIGIDO: Era </Hbutton> -->
+                            <button onclick="deleteTransacaoLocal('${clienteId}', '${t.id}')" class="text-gray-400 hover:text-red-600 text-xs" title="Excluir Transação">
+                               <i data-lucide="trash-2" class="w-3 h-3"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 `;
             }).join('');
         }
         
-        // --- Manipulação de Dados (CRUD Clientes) ---
-
         async function handleNovoClienteSubmit(e) {
-            e.preventDefault();
-
-            const newId = crypto.randomUUID(); // Gera um ID único local
-            const novoCliente = {
-                id: newId,
-                nome: document.getElementById('nome').value,
-                telefone: document.getElementById('telefone').value,
-                empresa: document.getElementById('empresa').value,
-                bandeira: document.getElementById('bandeira').value,
                 senha: document.getElementById('senha').value,
                 vendedor: document.getElementById('vendedor').value,
-                percentualComissao: parseFloat(document.getElementById('percentualComissao').value) || 0
+                percentualComissao: parseFloat(document.getElementById('percentualComissao').value) || 0,
+                saldoInicial: parseFloat(document.getElementById('saldoInicial').value) || 0, // Salva o saldo inicial
+
+                // Novos campos
+                tipoPix: document.getElementById('tipoPix').value,
+                chavePix: document.getElementById('chavePix').value,
+                cep: document.getElementById('cep').value,
+                logradouro: document.getElementById('logradouro').value,
+                numero: document.getElementById('numero').value,
+                complemento: document.getElementById('complemento').value,
+                bairro: document.getElementById('bairro').value,
+                cidade: document.getElementById('cidade').value,
+                estado: document.getElementById('estado').value
             };
             
             console.log("Adicionando novo cliente:", novoCliente.nome);
@@ -628,6 +906,55 @@
             
             e.target.reset();
             hideModal('novo-cliente-modal');
+        }
+        
+        // --- NOVO: Handler para submit de EDIÇÃO de cliente ---
+        async function handleEditClienteSubmit(e) {
+            e.preventDefault();
+            const clienteId = document.getElementById('edit-cliente-id').value;
+            if (!clienteId) {
+                showErrorModal("Erro: ID do cliente não encontrado. Não foi possível salvar.");
+                return;
+            }
+
+            const clienteIndex = clientes.findIndex(c => c.id === clienteId);
+            if (clienteIndex === -1) {
+                showErrorModal("Erro: Cliente não encontrado na base de dados.");
+                return;
+            }
+            
+            // Cria o objeto cliente atualizado
+            const updatedCliente = {
+                id: clienteId, // Mantém o ID original
+                nome: document.getElementById('edit-nome').value,
+                telefone: document.getElementById('edit-telefone').value,
+                empresa: document.getElementById('edit-empresa').value,
+                bandeira: document.getElementById('edit-bandeira').value,
+                senha: document.getElementById('edit-senha').value,
+                vendedor: document.getElementById('edit-vendedor').value,
+                percentualComissao: parseFloat(document.getElementById('edit-percentualComissao').value) || 0,
+                saldoInicial: parseFloat(document.getElementById('edit-saldoInicial').value) || 0,
+                tipoPix: document.getElementById('edit-tipoPix').value,
+                chavePix: document.getElementById('edit-chavePix').value,
+                cep: document.getElementById('edit-cep').value,
+                logradouro: document.getElementById('edit-logradouro').value,
+                numero: document.getElementById('edit-numero').value,
+                complemento: document.getElementById('edit-complemento').value,
+                bairro: document.getElementById('edit-bairro').value,
+                cidade: document.getElementById('edit-cidade').value,
+                estado: document.getElementById('edit-estado').value
+            };
+            
+            console.log("Atualizando cliente:", clienteId);
+            
+            // Substitui o cliente antigo pelo novo no array
+            clientes[clienteIndex] = updatedCliente;
+            
+            saveData();
+            render();
+            
+            e.target.reset();
+            hideModal('edit-cliente-modal');
         }
         
         window.deleteClienteLocal = async (id, nome) => {
@@ -686,6 +1013,56 @@
             }
         }
         
+        // --- NOVO: Handler para submit de EDIÇÃO de transação ---
+        async function handleEditTransacaoSubmit(e) {
+            e.preventDefault();
+            const clienteId = document.getElementById('edit-transacao-cliente-id').value;
+            const transacaoId = document.getElementById('edit-transacao-id').value;
+            
+            if (!clienteId || !transacaoId) {
+                showErrorModal("Erro: IDs não encontrados. Não foi possível salvar a transação.");
+                return;
+            }
+            
+            const editedTransacao = {
+                id: transacaoId, // Mantém o ID original
+                tipo: document.getElementById('edit-transacao-tipo').value,
+                data: document.getElementById('edit-transacao-data').value,
+                valor: parseFloat(document.getElementById('edit-transacao-valor').value) || 0,
+                loja: document.getElementById('edit-transacao-loja').value
+            };
+            
+            // Validação
+            if (editedTransacao.tipo === 'saida' && !editedTransacao.loja) {
+                showErrorModal("O campo 'Loja' é obrigatório para transações de saída.");
+                return;
+            }
+            
+            const txs = transacoes.get(clienteId);
+            if (!txs) {
+                showErrorModal("Erro: Cliente não encontrado no Map de transações.");
+                return;
+            }
+
+            const txIndex = txs.findIndex(t => t.id === transacaoId);
+            if (txIndex === -1) {
+                showErrorModal("Erro: Transação não encontrada.");
+                return;
+            }
+            
+            console.log(`Atualizando transação ${transacaoId} para o cliente ${clienteId}`);
+            
+            // Substitui a transação antiga pela nova
+            txs[txIndex] = editedTransacao;
+            transacoes.set(clienteId, txs); // Atualiza o Map
+            
+            saveData();
+            render();
+            
+            e.target.reset();
+            hideModal('edit-transacao-modal');
+        }
+        
         window.deleteTransacaoLocal = async (clienteId, transacaoId) => {
              if (await showConfirmModal(`Tem certeza que deseja excluir esta transação?`)) {
                  console.log(`Excluindo transação local ${transacaoId} do cliente ${clienteId}`);
@@ -703,6 +1080,56 @@
              }
         }
         
+        // --- Ações do WhatsApp ---
+
+        window.showWhatsAppModal = (clienteId) => {
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (!cliente) {
+                console.error("Cliente não encontrado para WhatsApp:", clienteId);
+                return;
+            }
+            
+            if (!cliente.telefone || cliente.telefone.trim() === '') {
+                showErrorModal("Este cliente não possui um número de telefone cadastrado.");
+                return;
+            }
+
+            document.getElementById('whatsapp-cliente-nome').textContent = cliente.nome;
+            
+            // Atribui os handlers aos botões
+            document.getElementById('btn-whatsapp-extrato').onclick = () => handleWhatsAppSend('extrato', cliente);
+            document.getElementById('btn-whatsapp-pix').onclick = () => handleWhatsAppSend('pix', cliente);
+
+            showModal('whatsapp-options-modal');
+        }
+
+        function handleWhatsAppSend(tipo, cliente) {
+            let telefone = (cliente.telefone || '').replace(/\D/g, ''); // Remove todos os não-dígitos
+            
+            // Adiciona o código do país (55) se não estiver presente
+            if (telefone.length > 0 && !telefone.startsWith('55')) {
+                telefone = '55' + telefone;
+            }
+
+            let mensagem = '';
+            
+            if (tipo === 'extrato') {
+                mensagem = `Olá ${cliente.nome}, tudo bem? Por favor, poderia me enviar o print do extrato do seu cartão? Obrigado!`;
+            } 
+            else if (tipo === 'pix') {
+                if (!cliente.chavePix || cliente.chavePix.trim() === '') {
+                    showErrorModal("Este cliente não possui uma Chave Pix cadastrada para confirmação.");
+                    return;
+                }
+                mensagem = `Olá ${cliente.nome}, tudo bem? Poderia confirmar se seus dados do Pix (Chave: ${cliente.chavePix}) ainda estão corretos? Obrigado!`;
+            }
+
+            const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`; // CORRIGIDO: Era httpsa://
+            window.open(url, '_blank');
+            
+            hideModal('whatsapp-options-modal');
+        }
+
         // --- Funções de Import/Export ---
         
         function exportData() {
@@ -731,6 +1158,61 @@
             } catch (error) {
                 console.error("Erro ao exportar dados:", error);
                 showErrorModal("Ocorreu um erro ao gerar o arquivo de backup.");
+            }
+        }
+        
+        // --- NOVO: Exportação de Extrato CSV ---
+        window.exportarExtratoCSV = (clienteId, clienteNome) => {
+            console.log(`Exportando extrato CSV para ${clienteNome}`);
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (!cliente) return;
+            
+            const txs = transacoes.get(clienteId) || [];
+            if (txs.length === 0) {
+                showErrorModal("Este cliente não possui transações para exportar.");
+                return;
+            }
+            
+            const percentualComissao = (cliente.percentualComissao || 0) / 100;
+            
+            // Ordena por data (mais antiga primeiro, para extrato)
+            txs.sort((a, b) => (a.data || '').localeCompare(b.data || ''));
+
+            const headers = "Data,Tipo,Valor (R$),Loja,Comissão (R$)\n";
+            
+            let csvContent = headers;
+            
+            txs.forEach(t => {
+                const data = formatDate(t.data);
+                const tipo = t.tipo === 'entrada' ? 'Entrada' : 'Saída';
+                // Formata para CSV (usando vírgula como decimal)
+                const valor = (t.valor || 0).toFixed(2).replace('.', ','); 
+                const loja = t.loja || '';
+                const comissao = t.tipo === 'entrada' ? (t.valor * percentualComissao).toFixed(2).replace('.', ',') : '0,00';
+                
+                // Coloca aspas para garantir que vírgulas no nome da loja não quebrem o CSV
+                const linha = `"${data}","${tipo}","${valor}","${loja}","${comissao}"\n`;
+                csvContent += linha;
+            });
+            
+            try {
+                // \uFEFF (Byte Order Mark) garante que o Excel abra o UTF-8 corretamente
+                const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `extrato_${clienteNome.replace(/ /g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                console.log("Exportação CSV concluída.");
+
+            } catch (error) {
+                console.error("Erro ao exportar CSV:", error);
+                showErrorModal("Ocorreu um erro ao gerar o arquivo CSV.");
             }
         }
         
@@ -811,6 +1293,75 @@
         
         window.showTransactionModal = (clienteId, clienteNome) => {
              showModal('nova-transacao-modal', { clienteId, clienteNome });
+        }
+
+        // --- NOVO: Mostrar Modal de Edição de Cliente ---
+        window.showEditClienteModal = (clienteId) => {
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (!cliente) {
+                showErrorModal("Erro: Cliente não encontrado.");
+                return;
+            }
+            
+            console.log("Abrindo modal de edição para:", cliente.nome);
+            
+            // Preenche o formulário de edição
+            document.getElementById('edit-cliente-id').value = cliente.id;
+            document.getElementById('edit-nome').value = cliente.nome;
+            document.getElementById('edit-telefone').value = cliente.telefone || '';
+            document.getElementById('edit-empresa').value = cliente.empresa || '';
+            document.getElementById('edit-senha').value = cliente.senha || '';
+            document.getElementById('edit-bandeira').value = cliente.bandeira || '';
+            document.getElementById('edit-vendedor').value = cliente.vendedor || '';
+            document.getElementById('edit-percentualComissao').value = cliente.percentualComissao || 0;
+            document.getElementById('edit-saldoInicial').value = cliente.saldoInicial || 0;
+            
+            document.getElementById('edit-tipoPix').value = cliente.tipoPix || '';
+            document.getElementById('edit-chavePix').value = cliente.chavePix || '';
+            document.getElementById('edit-cep').value = cliente.cep || '';
+            document.getElementById('edit-logradouro').value = cliente.logradouro || '';
+            document.getElementById('edit-numero').value = cliente.numero || '';
+            document.getElementById('edit-complemento').value = cliente.complemento || '';
+            document.getElementById('edit-bairro').value = cliente.bairro || '';
+            document.getElementById('edit-cidade').value = cliente.cidade || '';
+            document.getElementById('edit-estado').value = cliente.estado || '';
+            
+            showModal('edit-cliente-modal');
+        }
+        
+        // --- NOVO: Mostrar Modal de Edição de Transação ---
+        window.showEditTransacaoModal = (clienteId, transacaoId) => {
+            const txs = transacoes.get(clienteId);
+            if (!txs) {
+                showErrorModal("Erro: Cliente não encontrado.");
+                return;
+            }
+            
+            const transacao = txs.find(t => t.id === transacaoId);
+            if (!transacao) {
+                showErrorModal("Erro: Transação não encontrada.");
+                return;
+            }
+            
+            console.log("Abrindo modal de edição para transação:", transacaoId);
+
+            // Preenche o formulário de edição
+            document.getElementById('edit-transacao-cliente-id').value = clienteId;
+            document.getElementById('edit-transacao-id').value = transacao.id;
+            document.getElementById('edit-transacao-tipo').value = transacao.tipo;
+            document.getElementById('edit-transacao-data').value = transacao.data;
+            document.getElementById('edit-transacao-valor').value = transacao.valor;
+            document.getElementById('edit-transacao-loja').value = transacao.loja || '';
+            
+            // Mostra/oculta o campo loja
+            const lojaContainer = document.getElementById('edit-loja-input-container');
+            if (transacao.tipo === 'saida') {
+                lojaContainer.classList.remove('hidden');
+            } else {
+                lojaContainer.classList.add('hidden');
+            }
+            
+            showModal('edit-transacao-modal');
         }
 
         window.toggleTransactions = (clienteId) => {
@@ -949,10 +1500,15 @@
         document.getElementById('show-novo-cliente-modal').addEventListener('click', () => showModal('novo-cliente-modal'));
         document.getElementById('close-novo-cliente-modal').addEventListener('click', () => hideModal('novo-cliente-modal'));
         document.getElementById('close-nova-transacao-modal').addEventListener('click', () => hideModal('nova-transacao-modal'));
+        document.getElementById('close-whatsapp-options-modal').addEventListener('click', () => hideModal('whatsapp-options-modal'));
+        document.getElementById('close-edit-cliente-modal').addEventListener('click', () => hideModal('edit-cliente-modal')); // NOVO
+        document.getElementById('close-edit-transacao-modal').addEventListener('click', () => hideModal('edit-transacao-modal')); // NOVO
         
         // Forms
         document.getElementById('novo-cliente-form').addEventListener('submit', handleNovoClienteSubmit);
         document.getElementById('nova-transacao-form').addEventListener('submit', handleNovaTransacaoSubmit);
+        document.getElementById('edit-cliente-form').addEventListener('submit', handleEditClienteSubmit); // NOVO
+        document.getElementById('edit-transacao-form').addEventListener('submit', handleEditTransacaoSubmit); // NOVO
         
         // Listener para mostrar/ocultar campo Loja
         document.getElementById('transacao-tipo').addEventListener('change', (e) => {
@@ -964,21 +1520,18 @@
             }
         });
         
+        // NOVO: Listener para mostrar/ocultar campo Loja (no modal de edição)
+        document.getElementById('edit-transacao-tipo').addEventListener('change', (e) => {
+            const lojaContainer = document.getElementById('edit-loja-input-container');
+            if (e.target.value === 'saida') {
+                lojaContainer.classList.remove('hidden');
+            } else {
+                lojaContainer.classList.add('hidden');
+            }
+        });
+        
         // Botões Import/Export
         document.getElementById('export-button').addEventListener('click', exportData);
-        document.getElementById('import-button').addEventListener('click', () => {
-            // Clica no input de arquivo oculto
-            document.getElementById('import-file-input').click();
-        });
-
-
-        // Inicializa o app
-        document.addEventListener('DOMContentLoaded', () => {
-            initApp();
-        });
-
-    </script>
-</body>
-</html>
+/* ... existing code ... -->
 
 
