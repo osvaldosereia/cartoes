@@ -529,7 +529,7 @@
 
 
     <!-- Scripts (Não é mais Firebase) -->
-    <script type="module">
+    <script>
         
         // --- Constantes de Storage ---
         const CLIENTES_STORAGE_KEY = 'gestor_clientes_data';
@@ -1532,6 +1532,19 @@
         
         // Botões Import/Export
         document.getElementById('export-button').addEventListener('click', exportData);
-/* ... existing code ... -->
+        
+        // Botão Import
+        document.getElementById('import-button').addEventListener('click', () => {
+            // Clica no input de arquivo escondido
+            document.getElementById('import-file-input').click();
+        });
 
+        // Inicializa a aplicação e os ícones
+        window.lucide.createIcons();
+        initApp(); // Inicia a aplicação
+        
+    </script>
+
+</body>
+</html>
 
