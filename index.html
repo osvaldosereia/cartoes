@@ -304,6 +304,13 @@
         </div>
     </div>
     
+    <!-- Modal: Novo Cliente -->
+    <!-- CORREÇÃO DE CSS: Removido 'items-center', adicionado 'pt-12 pb-12' para permitir rolagem de modais altos -->
+    <div id="novo-cliente-modal" class="fixed inset-0 z-50 flex justify-center bg-black bg-opacity-50 hidden overflow-y-auto pt-12 pb-12">
+        <!-- CORREÇÃO DE CSS: Removido 'm-4', adicionado 'mx-auto', 'max-h-[90vh]' e 'overflow-y-auto' -->
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-auto transform transition-all max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-gray-800">Cadastrar Novo Cliente</h2>
     <!-- Modal: EDITAR Cliente (NOVO) -->
     <div id="edit-cliente-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden overflow-y-auto">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg m-4 transform transition-all">
@@ -431,13 +438,13 @@
         </div>
     </div>
     
-    <!-- Modal: Nova Transação -->
-    <div id="nova-transacao-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4 transform transition-all">
+    <!-- Modal: EDITAR Cliente (NOVO) -->
+    <!-- CORREÇÃO DE CSS: Removido 'items-center', adicionado 'pt-12 pb-12' para permitir rolagem de modais altos -->
+    <div id="edit-cliente-modal" class="fixed inset-0 z-50 flex justify-center bg-black bg-opacity-50 hidden overflow-y-auto pt-12 pb-12">
+        <!-- CORREÇÃO DE CSS: Removido 'm-4', adicionado 'mx-auto', 'max-h-[90vh]' e 'overflow-y-auto' -->
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg mx-auto transform transition-all max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-semibold text-gray-800">Nova Transação</h2>
-                <button id="close-nova-transacao-modal" class="text-gray-400 hover:text-gray-600">
-                    <i data-lucide="x" class="w-6 h-6"></i>
+                <h2 class="text-2xl font-semibold text-gray-800">Editar Cliente</h2>
                 </button>
             </div>
             <form id="nova-transacao-form" class="space-y-4">
@@ -1323,6 +1330,13 @@
             
             const modal = document.getElementById(modalId);
             if(modal) modal.classList.remove('hidden');
+
+            // --- CORREÇÃO DE BUG ---
+            // Força a recriação dos ícones (como o 'X' de fechar)
+            // toda vez que um modal é aberto.
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
         }
 
         function hideModal(modalId) {
@@ -1588,4 +1602,5 @@
 
 </body>
 </html>
+
 
