@@ -13,6 +13,8 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
+            /* Estilo minimalista/iOS */
+            background-color: #f8f9fa; /* Um cinza muito claro */
         }
         /* Ajuste para inputs de número sem setas (spinners) */
         input[type=number]::-webkit-inner-spin-button, 
@@ -35,9 +37,18 @@
             opacity: 1;
             margin-top: 1rem;
         }
+        
+        /* Inputs com estilo minimalista */
+        .form-input {
+            @apply mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500;
+        }
+        .form-select {
+            @apply mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500;
+        }
+
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 antialiased">
+<body class="bg-gray-50 text-gray-900 antialiased">
 
     <!-- Container Principal -->
     <div class="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
@@ -46,7 +57,19 @@
 
         <!-- Seção de Estatísticas (Cabeçalho) -->
         <div id="stats-header" class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Cards de Estatísticas serão injetados aqui -->
+            <!-- Cards de Estatísticas (Estilo minimalista) -->
+            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <h3 class="text-sm font-medium text-gray-500 truncate">Qtd. Clientes</h3>
+                <p class="mt-1 text-3xl font-semibold text-gray-900">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <h3 class="text-sm font-medium text-gray-500 truncate">Saldo Total</h3>
+                <p class="mt-1 text-3xl font-semibold text-gray-900">R$ 0,00</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <h3 class="text-sm font-medium text-gray-500 truncate">Total Comissões</h3>
+                <p class="mt-1 text-3xl font-semibold text-gray-900">R$ 0,00</p>
+            </div>
         </div>
 
         <!-- Seção de Controles (Busca, Import/Export, Novo Cliente) -->
@@ -57,7 +80,7 @@
                     type="text" 
                     id="search-input" 
                     placeholder="Buscar cliente por nome..."
-                    class="w-full pl-10 pr-4 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    class="w-full pl-10 pr-4 py-2 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 >
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
@@ -70,14 +93,14 @@
                 <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="handleFileSelect(event)">
                 <button 
                     id="import-button"
-                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                     <i data-lucide="upload" class="w-5 h-5 mr-2"></i>
                     Importar
                 </button>
                 <button 
                     id="export-button"
-                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                     <i data-lucide="download" class="w-5 h-5 mr-2"></i>
                     Exportar
@@ -86,7 +109,7 @@
                 <!-- Botão Novo Cliente -->
                 <button 
                     id="show-novo-cliente-modal"
-                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
                     <i data-lucide="user-plus" class="w-5 h-5 mr-2"></i>
                     Novo Cliente
@@ -95,13 +118,13 @@
         </div>
         
         <!-- Seção de Filtros (Segmentadores) -->
-        <div id="filters-container" class="mb-6 flex flex-col sm:flex-row flex-wrap gap-4 p-4 bg-white rounded-lg shadow">
+        <div id="filters-container" class="mb-6 flex flex-col sm:flex-row flex-wrap gap-4 p-4 bg-white rounded-lg border border-gray-200">
             <h3 class="text-lg font-medium text-gray-800 sm:self-center w-full sm:w-auto mb-2 sm:mb-0">Filtros:</h3>
             
             <!-- Filtro por Bandeira -->
             <div class="flex-1 min-w-[150px]">
                 <label for="filtro-bandeira" class="block text-sm font-medium text-gray-700">Bandeira</label>
-                <select id="filtro-bandeira" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <select id="filtro-bandeira" class="form-select">
                     <option value="">Todas</option>
                     <option value="ALELO">ALELO</option>
                     <option value="SODEXO/PLUXEE">SODEXO/PLUXEE</option>
@@ -119,7 +142,7 @@
             <!-- Filtro por Vendedor -->
             <div class="flex-1 min-w-[150px]">
                 <label for="filtro-vendedor" class="block text-sm font-medium text-gray-700">Vendedor</label>
-                <select id="filtro-vendedor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <select id="filtro-vendedor" class="form-select">
                     <option value="">Todos</option>
                     <option value="Osvaldo">Osvaldo</option>
                     <option value="Lucas">Lucas</option>
@@ -131,7 +154,7 @@
             <!-- Filtro de Ordenação -->
             <div class="flex-1 min-w-[150px]">
                 <label for="filtro-ordenacao" class="block text-sm font-medium text-gray-700">Ordenar por</label>
-                <select id="filtro-ordenacao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <select id="filtro-ordenacao" class="form-select">
                     <option value="nome">Nome (A-Z)</option>
                     <option value="empresa">Empresa (A-Z)</option>
                     <option value="saldoDesc">Saldo (Maior)</option>
@@ -170,25 +193,25 @@
                 <!-- Coluna 1 -->
                 <div>
                     <label for="nome" class="block text-sm font-medium text-gray-700">Nome *</label>
-                    <input type="text" id="nome" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="nome" required class="form-input">
                 </div>
                 <div>
                     <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
-                    <input type="tel" id="telefone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="tel" id="telefone" class="form-input">
                 </div>
                 <div>
                     <label for="empresa" class="block text-sm font-medium text-gray-700">Empresa</label>
-                    <input type="text" id="empresa" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="empresa" class="form-input">
                 </div>
                  <div>
                     <label for="senha" class="block text-sm font-medium text-gray-700">Senha</label>
-                    <input type="text" id="senha" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="senha" class="form-input">
                 </div>
                 
                 <!-- Coluna 2 -->
                 <div>
                     <label for="bandeira" class="block text-sm font-medium text-gray-700">Bandeira</label>
-                    <select id="bandeira" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="bandeira" class="form-select">
                         <option value="">Selecione...</option>
                         <option value="ALELO">ALELO</option>
                         <option value="SODEXO/PLUXEE">SODEXO/PLUXEE</option>
@@ -204,7 +227,7 @@
                 </div>
                 <div>
                     <label for="vendedor" class="block text-sm font-medium text-gray-700">Vendedor</label>
-                    <select id="vendedor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="vendedor" class="form-select">
                         <option value="">Selecione...</option>
                         <option value="Osvaldo">Osvaldo</option>
                         <option value="Lucas">Lucas</option>
@@ -214,17 +237,17 @@
                 </div>
                 <div>
                     <label for="percentualComissao" class="block text-sm font-medium text-gray-700">% Comissão *</label>
-                    <input type="number" id="percentualComissao" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: 10.5">
+                    <input type="number" id="percentualComissao" step="0.01" min="0" required class="form-input" placeholder="Ex: 10.5">
                 </div>
                 <div>
                     <label for="saldoInicial" class="block text-sm font-medium text-gray-700">Saldo Inicial (R$)</label>
-                    <input type="number" id="saldoInicial" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Opcional. Ex: 150.00">
+                    <input type="number" id="saldoInicial" step="0.01" class="form-input" placeholder="Opcional. Ex: 150.00">
                 </div>
                 
                 <!-- Novos campos de Pix -->
                 <div class="col-span-full sm:col-span-1">
                     <label for="tipoPix" class="block text-sm font-medium text-gray-700">Tipo Chave Pix</label>
-                    <select id="tipoPix" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="tipoPix" class="form-select">
                         <option value="">Nenhuma</option>
                         <option value="celular">Celular</option>
                         <option value="cpf_cnpj">CPF/CNPJ</option>
@@ -234,7 +257,7 @@
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="chavePix" class="block text-sm font-medium text-gray-700">Chave Pix</label>
-                    <input type="text" id="chavePix" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="chavePix" class="form-input">
                 </div>
 
                 <!-- Novos campos de Endereço -->
@@ -244,36 +267,36 @@
 
                 <div class="col-span-full sm:col-span-1">
                     <label for="cep" class="block text-sm font-medium text-gray-700">CEP</label>
-                    <input type="text" id="cep" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="cep" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="logradouro" class="block text-sm font-medium text-gray-700">Logradouro</label>
-                    <input type="text" id="logradouro" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="logradouro" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="numero" class="block text-sm font-medium text-gray-700">Número</label>
-                    <input type="text" id="numero" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="numero" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="complemento" class="block text-sm font-medium text-gray-700">Complemento</label>
-                    <input type="text" id="complemento" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="complemento" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="bairro" class="block text-sm font-medium text-gray-700">Bairro</label>
-                    <input type="text" id="bairro" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="bairro" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="cidade" class="block text-sm font-medium text-gray-700">Cidade</label>
-                    <input type="text" id="cidade" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="cidade" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="estado" class="block text-sm font-medium text-gray-700">Estado</label>
-                    <input type="text" id="estado" maxlength="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: SP">
+                    <input type="text" id="estado" maxlength="2" class="form-input" placeholder="Ex: SP">
                 </div>
 
                 <!-- Botão de Envio -->
                 <div class="col-span-full flex justify-end mt-4">
-                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         Salvar Cliente
                     </button>
                 </div>
@@ -297,25 +320,25 @@
                 <!-- Coluna 1 -->
                 <div>
                     <label for="edit-nome" class="block text-sm font-medium text-gray-700">Nome *</label>
-                    <input type="text" id="edit-nome" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-nome" required class="form-input">
                 </div>
                 <div>
                     <label for="edit-telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
-                    <input type="tel" id="edit-telefone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="tel" id="edit-telefone" class="form-input">
                 </div>
                 <div>
                     <label for="edit-empresa" class="block text-sm font-medium text-gray-700">Empresa</label>
-                    <input type="text" id="edit-empresa" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-empresa" class="form-input">
                 </div>
                  <div>
                     <label for="edit-senha" class="block text-sm font-medium text-gray-700">Senha</label>
-                    <input type="text" id="edit-senha" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-senha" class="form-input">
                 </div>
                 
                 <!-- Coluna 2 -->
                 <div>
                     <label for="edit-bandeira" class="block text-sm font-medium text-gray-700">Bandeira</label>
-                    <select id="edit-bandeira" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="edit-bandeira" class="form-select">
                         <option value="">Selecione...</option>
                         <option value="ALELO">ALELO</option>
                         <option value="SODEXO/PLUXEE">SODEXO/PLUXEE</option>
@@ -331,7 +354,7 @@
                 </div>
                 <div>
                     <label for="edit-vendedor" class="block text-sm font-medium text-gray-700">Vendedor</label>
-                    <select id="edit-vendedor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="edit-vendedor" class="form-select">
                         <option value="">Selecione...</option>
                         <option value="Osvaldo">Osvaldo</option>
                         <option value="Lucas">Lucas</option>
@@ -341,17 +364,17 @@
                 </div>
                 <div>
                     <label for="edit-percentualComissao" class="block text-sm font-medium text-gray-700">% Comissão *</label>
-                    <input type="number" id="edit-percentualComissao" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: 10.5">
+                    <input type="number" id="edit-percentualComissao" step="0.01" min="0" required class="form-input" placeholder="Ex: 10.5">
                 </div>
                 <div>
                     <label for="edit-saldoInicial" class="block text-sm font-medium text-gray-700">Saldo Inicial (R$)</label>
-                    <input type="number" id="edit-saldoInicial" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Opcional. Ex: 150.00">
+                    <input type="number" id="edit-saldoInicial" step="0.01" class="form-input" placeholder="Opcional. Ex: 150.00">
                 </div>
                 
                 <!-- Campos de Pix -->
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-tipoPix" class="block text-sm font-medium text-gray-700">Tipo Chave Pix</label>
-                    <select id="edit-tipoPix" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="edit-tipoPix" class="form-select">
                         <option value="">Nenhuma</option>
                         <option value="celular">Celular</option>
                         <option value="cpf_cnpj">CPF/CNPJ</option>
@@ -361,7 +384,7 @@
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-chavePix" class="block text-sm font-medium text-gray-700">Chave Pix</label>
-                    <input type="text" id="edit-chavePix" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-chavePix" class="form-input">
                 </div>
 
                 <!-- Campos de Endereço -->
@@ -371,36 +394,36 @@
 
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-cep" class="block text-sm font-medium text-gray-700">CEP</label>
-                    <input type="text" id="edit-cep" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-cep" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-logradouro" class="block text-sm font-medium text-gray-700">Logradouro</label>
-                    <input type="text" id="edit-logradouro" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-logradouro" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-numero" class="block text-sm font-medium text-gray-700">Número</label>
-                    <input type="text" id="edit-numero" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-numero" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-complemento" class="block text-sm font-medium text-gray-700">Complemento</label>
-                    <input type="text" id="edit-complemento" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-complemento" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-bairro" class="block text-sm font-medium text-gray-700">Bairro</label>
-                    <input type="text" id="edit-bairro" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-bairro" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-cidade" class="block text-sm font-medium text-gray-700">Cidade</label>
-                    <input type="text" id="edit-cidade" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-cidade" class="form-input">
                 </div>
                 <div class="col-span-full sm:col-span-1">
                     <label for="edit-estado" class="block text-sm font-medium text-gray-700">Estado</label>
-                    <input type="text" id="edit-estado" maxlength="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: SP">
+                    <input type="text" id="edit-estado" maxlength="2" class="form-input" placeholder="Ex: SP">
                 </div>
 
                 <!-- Botão de Envio -->
                 <div class="col-span-full flex justify-end mt-4">
-                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         Atualizar Cliente
                     </button>
                 </div>
@@ -423,7 +446,7 @@
                 
                 <div>
                     <label for="transacao-tipo" class="block text-sm font-medium text-gray-700">Tipo *</label>
-                    <select id="transacao-tipo" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="transacao-tipo" required class="form-select">
                         <option value="entrada">Entrada (Crédito)</option>
                         <option value="saida">Saída (Uso)</option>
                     </select>
@@ -431,21 +454,21 @@
                 
                 <div id="loja-input-container" class="hidden"> <!-- Campo Loja (inicia oculto) -->
                     <label for="transacao-loja" class="block text-sm font-medium text-gray-700">Loja *</label>
-                    <input type="text" id="transacao-loja" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="transacao-loja" class="form-input">
                 </div>
                 
                 <div>
                     <label for="transacao-data" class="block text-sm font-medium text-gray-700">Data *</label>
-                    <input type="date" id="transacao-data" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="date" id="transacao-data" required class="form-input">
                 </div>
                 
                 <div>
                     <label for="transacao-valor" class="block text-sm font-medium text-gray-700">Valor (R$) *</label>
-                    <input type="number" id="transacao-valor" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="number" id="transacao-valor" step="0.01" min="0" required class="form-input">
                 </div>
 
                 <div class="flex justify-end mt-4">
-                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         Salvar Transação
                     </button>
                 </div>
@@ -468,7 +491,7 @@
                 
                 <div>
                     <label for="edit-transacao-tipo" class="block text-sm font-medium text-gray-700">Tipo *</label>
-                    <select id="edit-transacao-tipo" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <select id="edit-transacao-tipo" required class="form-select">
                         <option value="entrada">Entrada (Crédito)</option>
                         <option value="saida">Saída (Uso)</option>
                     </select>
@@ -476,21 +499,21 @@
                 
                 <div id="edit-loja-input-container" class="hidden"> <!-- Campo Loja (inicia oculto) -->
                     <label for="edit-transacao-loja" class="block text-sm font-medium text-gray-700">Loja *</label>
-                    <input type="text" id="edit-transacao-loja" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="text" id="edit-transacao-loja" class="form-input">
                 </div>
                 
                 <div>
                     <label for="edit-transacao-data" class="block text-sm font-medium text-gray-700">Data *</label>
-                    <input type="date" id="edit-transacao-data" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="date" id="edit-transacao-data" required class="form-input">
                 </div>
                 
                 <div>
                     <label for="edit-transacao-valor" class="block text-sm font-medium text-gray-700">Valor (R$) *</label>
-                    <input type="number" id="edit-transacao-valor" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <input type="number" id="edit-transacao-valor" step="0.01" min="0" required class="form-input">
                 </div>
 
                 <div class="flex justify-end mt-4">
-                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-500 py-2 px-4 text-sm font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         Atualizar Transação
                     </button>
                 </div>
@@ -511,14 +534,14 @@
                 <p class="text-sm text-gray-600">Selecione uma mensagem pré-definida para enviar.</p>
                 <button 
                     id="btn-whatsapp-extrato"
-                    class="w-full inline-flex justify-center items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                    class="w-full inline-flex justify-center items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 >
                     <i data-lucide="list-check" class="w-5 h-5 mr-2"></i>
                     Pedir print do extrato
                 </button>
                 <button 
                     id="btn-whatsapp-pix"
-                    class="w-full inline-flex justify-center items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                    class="w-full inline-flex justify-center items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50"
                 >
                     <i data-lucide="key-round" class="w-5 h-5 mr-2"></i>
                     Confirmar dados do Pix
@@ -719,19 +742,24 @@
             const { totalSaldo, totalComissao, qtdClientes } = calculateAllStats(clientesParaCalcular);
 
             statsContainer.innerHTML = `
-                <div class="bg-white p-4 rounded-lg shadow-md">
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
                     <h3 class="text-sm font-medium text-gray-500 truncate">Qtd. Clientes (Filtro)</h3>
                     <p class="mt-1 text-3xl font-semibold text-gray-900">${qtdClientes}</p>
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow-md">
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
                     <h3 class="text-sm font-medium text-gray-500 truncate">Saldo Total (Filtro)</h3>
                     <p class="mt-1 text-3xl font-semibold text-gray-900">${formatCurrency(totalSaldo)}</p>
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow-md">
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
                     <h3 class="text-sm font-medium text-gray-500 truncate">Total Comissões (Filtro)</h3>
                     <p class="mt-1 text-3xl font-semibold text-gray-900">${formatCurrency(totalComissao)}</p>
                 </div>
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Qtd. Total (Global)</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${clientes.length}</p>
+                </div>
             `;
+            // Adicionei um 4º card para mostrar a Qtd. Total Global, que é útil
         }
         
         function renderClientCards(filteredClientes) {
@@ -760,7 +788,7 @@
                     const saldoColor = saldoAtual > 0 ? 'text-green-600' : (saldoAtual < 0 ? 'text-red-600' : 'text-gray-900');
                     
                     return `
-                    <div class="bg-white shadow-lg rounded-lg p-5 flex flex-col justify-between">
+                    <div class="bg-white border border-gray-200 shadow-sm rounded-lg p-5 flex flex-col justify-between">
                         <div>
                             <!-- Informações do Cliente -->
                             <div class="flex justify-between items-start mb-3">
@@ -804,14 +832,14 @@
                             <div class="flex flex-col sm:flex-row gap-3 mb-4">
                                 <button 
                                     onclick="showTransactionModal('${cliente.id}', '${cliente.nome}')"
-                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                 >
                                     <i data-lucide="dollar-sign" class="w-4 h-4 mr-2"></i>
                                     Nova Transação
                                 </button>
                                 <button 
                                     onclick="toggleTransactions('${cliente.id}')"
-                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                 >
                                     <i data-lucide="list" class="w-4 h-4 mr-2"></i>
                                     Ver Extrato (${txs.length})
@@ -824,7 +852,7 @@
                                 
                                 <button 
                                     onclick="exportarExtratoCSV('${cliente.id}', '${cliente.nome}')"
-                                    class="w-full inline-flex justify-center items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 mb-3"
+                                    class="w-full inline-flex justify-center items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 mb-3"
                                 >
                                     <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-2"></i>
                                     Exportar Extrato (CSV)
@@ -868,7 +896,7 @@
                         <div class="flex gap-2 justify-end">
                             <button onclick="showEditTransacaoModal('${clienteId}', '${t.id}')" class="text-gray-400 hover:text-blue-600 text-xs" title="Editar Transação">
                                <i data-lucide="edit-3" class="w-3 h-3"></i>
-                            </button> <!-- CORRIGIDO: Era </Hbutton> -->
+                            </button>
                             <button onclick="deleteTransacaoLocal('${clienteId}', '${t.id}')" class="text-gray-400 hover:text-red-600 text-xs" title="Excluir Transação">
                                <i data-lucide="trash-2" class="w-3 h-3"></i>
                             </button>
@@ -879,13 +907,24 @@
             }).join('');
         }
         
+        // --- Manipulação de Dados (CRUD Cliente) ---
+
+        // CORRIGIDO: Esta é a função completa que estava faltando/corrompida
         async function handleNovoClienteSubmit(e) {
+            e.preventDefault(); // Impede o recarregamento da página
+            const newId = crypto.randomUUID(); // Gera ID único para o cliente
+
+            // Coleta todos os dados do formulário
+            const novoCliente = {
+                id: newId,
+                nome: document.getElementById('nome').value,
+                telefone: document.getElementById('telefone').value,
+                empresa: document.getElementById('empresa').value,
                 senha: document.getElementById('senha').value,
+                bandeira: document.getElementById('bandeira').value,
                 vendedor: document.getElementById('vendedor').value,
                 percentualComissao: parseFloat(document.getElementById('percentualComissao').value) || 0,
                 saldoInicial: parseFloat(document.getElementById('saldoInicial').value) || 0, // Salva o saldo inicial
-
-                // Novos campos
                 tipoPix: document.getElementById('tipoPix').value,
                 chavePix: document.getElementById('chavePix').value,
                 cep: document.getElementById('cep').value,
@@ -901,14 +940,14 @@
             clientes.push(novoCliente);
             transacoes.set(newId, []); // Inicializa o array de transações para o novo cliente
             
-            saveData();
-            render();
+            saveData(); // Salva no localStorage
+            render();   // Atualiza a tela
             
-            e.target.reset();
-            hideModal('novo-cliente-modal');
+            e.target.reset(); // Limpa o formulário
+            hideModal('novo-cliente-modal'); // Fecha o modal
         }
         
-        // --- NOVO: Handler para submit de EDIÇÃO de cliente ---
+        // Handler para submit de EDIÇÃO de cliente
         async function handleEditClienteSubmit(e) {
             e.preventDefault();
             const clienteId = document.getElementById('edit-cliente-id').value;
@@ -1013,7 +1052,7 @@
             }
         }
         
-        // --- NOVO: Handler para submit de EDIÇÃO de transação ---
+        // Handler para submit de EDIÇÃO de transação
         async function handleEditTransacaoSubmit(e) {
             e.preventDefault();
             const clienteId = document.getElementById('edit-transacao-cliente-id').value;
@@ -1124,7 +1163,7 @@
                 mensagem = `Olá ${cliente.nome}, tudo bem? Poderia confirmar se seus dados do Pix (Chave: ${cliente.chavePix}) ainda estão corretos? Obrigado!`;
             }
 
-            const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`; // CORRIGIDO: Era httpsa://
+            const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
             window.open(url, '_blank');
             
             hideModal('whatsapp-options-modal');
@@ -1161,7 +1200,7 @@
             }
         }
         
-        // --- NOVO: Exportação de Extrato CSV ---
+        // Exportação de Extrato CSV
         window.exportarExtratoCSV = (clienteId, clienteNome) => {
             console.log(`Exportando extrato CSV para ${clienteNome}`);
             const cliente = clientes.find(c => c.id === clienteId);
@@ -1295,7 +1334,7 @@
              showModal('nova-transacao-modal', { clienteId, clienteNome });
         }
 
-        // --- NOVO: Mostrar Modal de Edição de Cliente ---
+        // Mostrar Modal de Edição de Cliente
         window.showEditClienteModal = (clienteId) => {
             const cliente = clientes.find(c => c.id === clienteId);
             if (!cliente) {
@@ -1329,7 +1368,7 @@
             showModal('edit-cliente-modal');
         }
         
-        // --- NOVO: Mostrar Modal de Edição de Transação ---
+        // Mostrar Modal de Edição de Transação
         window.showEditTransacaoModal = (clienteId, transacaoId) => {
             const txs = transacoes.get(clienteId);
             if (!txs) {
@@ -1374,6 +1413,7 @@
             }
         }
         
+        // Modal de Confirmação/Erro
         function showConfirmModal(message, isError = false) {
             return new Promise((resolve) => {
                 const oldModal = document.getElementById('confirm-modal-overlay');
@@ -1407,9 +1447,9 @@
                 
                 if (isError) {
                    confirmBtn.textContent = 'OK';
-                   confirmBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'focus:ring-blue-500');
+                   confirmBtn.classList.add('bg-blue-500', 'hover:bg-blue-600', 'focus:ring-blue-500');
                 } else {
-                   confirmBtn.textContent = 'Confirmar'; // Texto genérico para confirmação
+                   confirmBtn.textContent = 'Confirmar'; // Texto para exclusão
                    confirmBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'focus:ring-red-500');
                 }
                 
@@ -1420,6 +1460,7 @@
                 overlay.appendChild(modal);
                 document.body.appendChild(overlay);
 
+                // Animação de entrada
                 requestAnimationFrame(() => {
                     overlay.classList.add('opacity-100');
                     modal.classList.remove('scale-95', 'opacity-0');
@@ -1447,7 +1488,7 @@
         }
         
         
-        // ... (Helpers de Formatação permanecem iguais) ...
+        // --- Helpers de Formatação ---
         function formatCurrency(value) {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
         }
@@ -1501,16 +1542,16 @@
         document.getElementById('close-novo-cliente-modal').addEventListener('click', () => hideModal('novo-cliente-modal'));
         document.getElementById('close-nova-transacao-modal').addEventListener('click', () => hideModal('nova-transacao-modal'));
         document.getElementById('close-whatsapp-options-modal').addEventListener('click', () => hideModal('whatsapp-options-modal'));
-        document.getElementById('close-edit-cliente-modal').addEventListener('click', () => hideModal('edit-cliente-modal')); // NOVO
-        document.getElementById('close-edit-transacao-modal').addEventListener('click', () => hideModal('edit-transacao-modal')); // NOVO
+        document.getElementById('close-edit-cliente-modal').addEventListener('click', () => hideModal('edit-cliente-modal'));
+        document.getElementById('close-edit-transacao-modal').addEventListener('click', () => hideModal('edit-transacao-modal'));
         
         // Forms
         document.getElementById('novo-cliente-form').addEventListener('submit', handleNovoClienteSubmit);
         document.getElementById('nova-transacao-form').addEventListener('submit', handleNovaTransacaoSubmit);
-        document.getElementById('edit-cliente-form').addEventListener('submit', handleEditClienteSubmit); // NOVO
-        document.getElementById('edit-transacao-form').addEventListener('submit', handleEditTransacaoSubmit); // NOVO
+        document.getElementById('edit-cliente-form').addEventListener('submit', handleEditClienteSubmit);
+        document.getElementById('edit-transacao-form').addEventListener('submit', handleEditTransacaoSubmit);
         
-        // Listener para mostrar/ocultar campo Loja
+        // Listener para mostrar/ocultar campo Loja (Modal Nova Transação)
         document.getElementById('transacao-tipo').addEventListener('change', (e) => {
             const lojaContainer = document.getElementById('loja-input-container');
             if (e.target.value === 'saida') {
@@ -1520,7 +1561,7 @@
             }
         });
         
-        // NOVO: Listener para mostrar/ocultar campo Loja (no modal de edição)
+        // Listener para mostrar/ocultar campo Loja (Modal Editar Transação)
         document.getElementById('edit-transacao-tipo').addEventListener('change', (e) => {
             const lojaContainer = document.getElementById('edit-loja-input-container');
             if (e.target.value === 'saida') {
