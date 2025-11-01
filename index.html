@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Clientes (Cards)</title>
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Biblioteca de ícones (Lucide) -->
+    <script src="https://unpkg.com/lucide-react@0.395.0/dist/umd/lucide.min.js"></script>
+    <style>
+        /* Estilo para a fonte Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Ajuste para inputs de número sem setas (spinners) */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        /* Para animação de 'hidden' */
+        .extrato-lista {
+            transition: all 0.3s ease-in-out;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+        }
+        .extrato-lista.visible {
+            max-height: 1000px; /* altura suficiente */
+            opacity: 1;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 antialiased">
+
+    <!-- Container Principal -->
+    <div class="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Gestor de Clientes</h1>
+
+        <!-- Seção de Estatísticas (Cabeçalho) -->
+        <div id="stats-header" class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Cards de Estatísticas serão injetados aqui -->
+        </div>
+
+        <!-- Seção de Controles (Busca, Import/Export, Novo Cliente) -->
+        <div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Barra de Busca -->
+            <div class="relative w-full md:max-w-xs">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Buscar cliente por nome..."
+                    class="w-full pl-10 pr-4 py-2 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- Grupo de Botões -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                 <!-- Botões Import/Export -->
+                <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="handleFileSelect(event)">
+                <button 
+                    id="import-button"
+                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                    <i data-lucide="upload" class="w-5 h-5 mr-2"></i>
+                    Importar
+                </button>
+                <button 
+                    id="export-button"
+                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                    <i data-lucide="download" class="w-5 h-5 mr-2"></i>
+                    Exportar
+                </button>
+
+                <!-- Botão Novo Cliente -->
+                <button 
+                    id="show-novo-cliente-modal"
+                    class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                    <i data-lucide="user-plus" class="w-5 h-5 mr-2"></i>
+                    Novo Cliente
+                </button>
+            </div>
+        </div>
+
+        <!-- Seção de Cards de Clientes -->
+        <div id="client-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards de clientes serão injetados aqui -->
+            <p class="text-gray-500 col-span-full text-center" id="loading-message">Carregando dados...</p>
+        </div>
+        
+    </div> <!-- Fim do Container Principal -->
+
+    <!-- Modal: Novo Cliente -->
+    <div id="novo-cliente-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg m-4 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-gray-800">Cadastrar Novo Cliente</h2>
+                <button id="close-novo-cliente-modal" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="novo-cliente-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Coluna 1 -->
+                <div>
+                    <label for="nome" class="block text-sm font-medium text-gray-700">Nome *</label>
+                    <input type="text" id="nome" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
+                    <input type="tel" id="telefone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="empresa" class="block text-sm font-medium text-gray-700">Empresa</label>
+                    <input type="text" id="empresa" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <!-- Coluna 2 -->
+                <div>
+                    <label for="bandeira" class="block text-sm font-medium text-gray-700">Bandeira</label>
+                    <input type="text" id="bandeira" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="senha" class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input type="text" id="senha" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="percentualComissao" class="block text-sm font-medium text-gray-700">% Comissão *</label>
+                    <input type="number" id="percentualComissao" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ex: 10.5">
+                </div>
+                <!-- Botão de Envio -->
+                <div class="col-span-full flex justify-end mt-4">
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Salvar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Nova Transação -->
+    <div id="nova-transacao-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md m-4 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold text-gray-800">Nova Transação</h2>
+                <button id="close-nova-transacao-modal" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form id="nova-transacao-form" class="space-y-4">
+                <input type="hidden" id="transacao-cliente-id">
+                <p class="text-sm text-gray-600">Adicionando para: <strong id="transacao-cliente-nome" class="text-gray-800">...</strong></p>
+                
+                <div>
+                    <label for="transacao-tipo" class="block text-sm font-medium text-gray-700">Tipo *</label>
+                    <select id="transacao-tipo" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="entrada">Entrada (Crédito)</option>
+                        <option value="saida">Saída (Uso)</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="transacao-data" class="block text-sm font-medium text-gray-700">Data *</label>
+                    <input type="date" id="transacao-data" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                
+                <div>
+                    <label for="transacao-valor" class="block text-sm font-medium text-gray-700">Valor (R$) *</label>
+                    <input type="number" id="transacao-valor" step="0.01" min="0" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <div class="flex justify-end mt-4">
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Salvar Transação
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Scripts (Não é mais Firebase) -->
+    <script type="module">
+        
+        // --- Constantes de Storage ---
+        const CLIENTES_STORAGE_KEY = 'gestor_clientes_data';
+        const TRANSACOES_STORAGE_KEY = 'gestor_transacoes_data';
+
+        // --- Estado da Aplicação ---
+        let clientes = []; // Array de clientes
+        let transacoes = new Map(); // Map(clienteId -> [array de transacoes])
+        let searchQuery = ""; // Estado da busca
+
+        // --- Inicialização ---
+
+        function initApp() {
+            console.log("Inicializando aplicação com localStorage.");
+            loadData();
+            render();
+        }
+
+        // --- Persistência (localStorage) ---
+
+        function loadData() {
+            try {
+                const clientesData = localStorage.getItem(CLIENTES_STORAGE_KEY);
+                const transacoesData = localStorage.getItem(TRANSACOES_STORAGE_KEY);
+                
+                if (clientesData) {
+                    clientes = JSON.parse(clientesData);
+                } else {
+                    clientes = [];
+                }
+                
+                if (transacoesData) {
+                    // Converte o array salvo de volta para um Map
+                    transacoes = new Map(JSON.parse(transacoesData));
+                } else {
+                    transacoes = new Map();
+                }
+                
+                console.log(`Carregados ${clientes.length} clientes e ${transacoes.size} registros de transação.`);
+
+            } catch (error) {
+                console.error("Erro ao carregar dados do localStorage:", error);
+                clientes = [];
+                transacoes = new Map();
+                // Mostra um erro para o usuário caso o JSON esteja corrompido
+                showErrorModal("Houve um erro ao carregar seus dados. Pode ser necessário limpar o cache do navegador ou importar um backup.");
+            }
+        }
+        
+        function saveData() {
+            try {
+                // Salva clientes como string JSON
+                localStorage.setItem(CLIENTES_STORAGE_KEY, JSON.stringify(clientes));
+                
+                // Converte o Map de transações para um array [key, value] e salva como string JSON
+                localStorage.setItem(TRANSACOES_STORAGE_KEY, JSON.stringify(Array.from(transacoes.entries())));
+                
+                console.log("Dados salvos no localStorage.");
+            } catch (error) {
+                console.error("Erro ao salvar dados no localStorage:", error);
+                showErrorModal("Erro ao salvar dados. O armazenamento local pode estar cheio.");
+            }
+        }
+        
+        // --- Renderização (Atualização da UI) ---
+
+        function render() {
+            // Ordena os clientes por nome antes de renderizar
+            clientes.sort((a, b) => a.nome.localeCompare(b.nome));
+            
+            renderEstatisticas();
+            renderClientCards();
+            
+            // Recria os ícones
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // ... (funções calculateAllStats e calculateClientStats permanecem iguais) ...
+        function calculateAllStats() {
+            let totalSaldo = 0;
+            let totalComissao = 0;
+            
+            for (const cliente of clientes) {
+                const stats = calculateClientStats(cliente.id);
+                totalSaldo += stats.saldoAtual;
+                totalComissao += stats.totalComissao;
+            }
+            
+            return {
+                totalSaldo,
+                totalComissao,
+                qtdClientes: clientes.length
+            };
+        }
+        
+        function calculateClientStats(clienteId) {
+            const cliente = clientes.find(c => c.id === clienteId);
+            const txs = transacoes.get(clienteId) || [];
+            
+            let totalEntradas = 0;
+            let totalSaidas = 0;
+            let totalComissao = 0;
+            const percentualComissao = cliente ? (cliente.percentualComissao || 0) / 100 : 0;
+            
+            txs.forEach(t => {
+                const valor = t.valor || 0;
+                if (t.tipo === 'entrada') {
+                    totalEntradas += valor;
+                    totalComissao += valor * percentualComissao;
+                } else if (t.tipo === 'saida') {
+                    totalSaidas += valor;
+                }
+            });
+            
+            const saldoAtual = totalEntradas - totalSaidas;
+            return { saldoAtual, totalComissao, totalEntradas, totalSaidas };
+        }
+        
+        function renderEstatisticas() {
+            const statsContainer = document.getElementById('stats-header');
+            const { totalSaldo, totalComissao, qtdClientes } = calculateAllStats();
+            
+            const saldoTotalGeral = clientes.reduce((acc, cliente) => {
+                return acc + calculateClientStats(cliente.id).saldoAtual;
+            }, 0);
+
+            statsContainer.innerHTML = `
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Qtd. Clientes</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${qtdClientes}</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Saldo Total (Atual)</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${formatCurrency(saldoTotalGeral)}</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Total Comissões (Entradas)</h3>
+                    <p class="mt-1 text-3xl font-semibold text-gray-900">${formatCurrency(totalComissao)}</p>
+                </div>
+            `;
+        }
+        
+        // ... (função renderClientCards permanece a mesma, mas chama 'deleteClienteLocal') ...
+        function renderClientCards() {
+            const container = document.getElementById('client-cards-container');
+            const loadingMsg = document.getElementById('loading-message');
+            
+            const filteredClientes = clientes.filter(c => 
+                c.nome.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            
+            if (filteredClientes.length === 0) {
+                loadingMsg.textContent = searchQuery ? 'Nenhum cliente encontrado.' : 'Nenhum cliente cadastrado.';
+                loadingMsg.classList.remove('hidden');
+                container.innerHTML = '';
+            } else {
+                loadingMsg.classList.add('hidden');
+                container.innerHTML = filteredClientes.map(cliente => {
+                    const { saldoAtual, totalComissao } = calculateClientStats(cliente.id);
+                    const txs = transacoes.get(cliente.id) || [];
+                    
+                    // Ordena transações por data (mais recente primeiro) para o extrato
+                    txs.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+                    
+                    const saldoColor = saldoAtual > 0 ? 'text-green-600' : (saldoAtual < 0 ? 'text-red-600' : 'text-gray-900');
+                    
+                    return `
+                    <div class="bg-white shadow-lg rounded-lg p-5 flex flex-col justify-between">
+                        <div>
+                            <!-- Informações do Cliente -->
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800">${cliente.nome}</h3>
+                                    <p class="text-sm text-gray-500">${cliente.empresa || 'Sem empresa'}</p>
+                                    <p class="text-sm text-gray-500">${cliente.telefone || 'Sem telefone'}</p>
+                                </div>
+                                <button onclick="deleteClienteLocal('${cliente.id}', '${cliente.nome}')" class="text-gray-400 hover:text-red-600" title="Excluir Cliente">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Stats do Cliente -->
+                            <div class="mb-4">
+                                <p class="text-sm font-medium text-gray-500">% Comissão</p>
+                                <p class="text-lg font-semibold text-blue-600">${formatPercentage(cliente.percentualComissao)}</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Saldo Atual</p>
+                                    <p class="text-2xl font-bold ${saldoColor}">${formatCurrency(saldoAtual)}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Comissão Gerada</p>
+                                    <p class="text-lg font-semibold text-gray-800">${formatCurrency(totalComissao)}</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Botões de Ação do Card -->
+                            <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                                <button 
+                                    onclick="showTransactionModal('${cliente.id}', '${cliente.nome}')"
+                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                >
+                                    <i data-lucide="dollar-sign" class="w-4 h-4 mr-2"></i>
+                                    Nova Transação
+                                </button>
+                                <button 
+                                    onclick="toggleTransactions('${cliente.id}')"
+                                    class="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                >
+                                    <i data-lucide="list" class="w-4 h-4 mr-2"></i>
+                                    Ver Extrato (${txs.length})
+                                </button>
+                            </div>
+                            
+                            <!-- Lista de Transações (Extrato) - Oculta por padrão -->
+                            <div id="extrato-lista-${cliente.id}" class="extrato-lista">
+                                <h4 class="text-md font-semibold mb-2 text-gray-700">Últimas Transações</h4>
+                                <div class="border rounded-md divide-y divide-gray-200">
+                                    ${renderTransactions(txs, cliente.id)}
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            }
+        }
+        
+        // ... (função renderTransactions permanece a mesma, mas chama 'deleteTransacaoLocal') ...
+        function renderTransactions(txs, clienteId) {
+            if (txs.length === 0) {
+                return '<p class="text-sm text-gray-500 p-3 text-center">Nenhuma transação registrada.</p>';
+            }
+            
+            return txs.map(t => {
+                const isEntrada = t.tipo === 'entrada';
+                const icon = isEntrada ? 'arrow-up-circle' : 'arrow-down-circle';
+                const color = isEntrada ? 'text-green-600' : 'text-red-600';
+                const sign = isEntrada ? '+' : '-';
+                
+                return `
+                <div class="p-3 flex justify-between items-center hover:bg-gray-50">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="${icon}" class="w-5 h-5 ${color}"></i>
+                        <div>
+                            <p class="text-sm font-medium ${color}">${isEntrada ? 'Entrada' : 'Saída'}</p>
+                            <p class="text-xs text-gray-500">${formatDate(t.data)}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-semibold ${color}">${sign} ${formatCurrency(t.valor)}</p>
+                        <button onclick="deleteTransacaoLocal('${clienteId}', '${t.id}')" class="text-gray-400 hover:text-red-600 text-xs" title="Excluir Transação">
+                           Excluir
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        // --- Manipulação de Dados (CRUD Clientes) ---
+
+        async function handleNovoClienteSubmit(e) {
+            e.preventDefault();
+
+            const newId = crypto.randomUUID(); // Gera um ID único local
+            const novoCliente = {
+                id: newId,
+                nome: document.getElementById('nome').value,
+                telefone: document.getElementById('telefone').value,
+                empresa: document.getElementById('empresa').value,
+                bandeira: document.getElementById('bandeira').value,
+                senha: document.getElementById('senha').value,
+                percentualComissao: parseFloat(document.getElementById('percentualComissao').value) || 0
+            };
+            
+            clientes.push(novoCliente);
+            transacoes.set(newId, []); // Inicializa o array de transações para o novo cliente
+            
+            saveData();
+            render();
+            
+            console.log("Cliente adicionado localmente!");
+            e.target.reset();
+            hideModal('novo-cliente-modal');
+        }
+        
+        window.deleteClienteLocal = async (id, nome) => {
+            if (await showConfirmModal(`Tem certeza que deseja excluir o cliente "${nome}"? Todas as suas transações também serão perdidas.`)) {
+                console.log("Excluindo cliente localmente:", id);
+                
+                // Filtra o cliente do array
+                clientes = clientes.filter(c => c.id !== id);
+                // Remove as transações do Map
+                transacoes.delete(id);
+                
+                saveData();
+                render();
+                
+                console.log("Cliente excluído.");
+            }
+        }
+        
+        // --- Manipulação de Dados (CRUD Transações) ---
+
+        async function handleNovaTransacaoSubmit(e) {
+            e.preventDefault();
+            const clienteId = document.getElementById('transacao-cliente-id').value;
+            if (!clienteId) return;
+
+            const newId = crypto.randomUUID(); // Gera ID único para a transação
+            const novaTransacao = {
+                id: newId,
+                tipo: document.getElementById('transacao-tipo').value,
+                data: document.getElementById('transacao-data').value,
+                valor: parseFloat(document.getElementById('transacao-valor').value) || 0
+            };
+            
+            const txs = transacoes.get(clienteId);
+            if (txs) {
+                txs.push(novaTransacao);
+                
+                saveData();
+                render(); // Re-renderiza para atualizar o extrato e os saldos
+                
+                console.log(`Transação adicionada localmente ao cliente ${clienteId}`);
+                e.target.reset();
+                hideModal('nova-transacao-modal');
+            } else {
+                console.error(`Cliente com ID ${clienteId} não encontrado no Map de transações.`);
+                showErrorModal("Erro: Não foi possível encontrar os dados deste cliente para salvar a transação.");
+            }
+        }
+        
+        window.deleteTransacaoLocal = async (clienteId, transacaoId) => {
+             if (await showConfirmModal(`Tem certeza que deseja excluir esta transação?`)) {
+                 console.log(`Excluindo transação local ${transacaoId} do cliente ${clienteId}`);
+                 
+                 let txs = transacoes.get(clienteId);
+                 if (txs) {
+                    // Filtra a transação excluída
+                    txs = txs.filter(t => t.id !== transacaoId);
+                    // Atualiza o Map
+                    transacoes.set(clienteId, txs);
+                    
+                    saveData();
+                    render();
+                    
+                    console.log("Transação excluída.");
+                 }
+             }
+        }
+        
+        // --- Funções de Import/Export ---
+        
+        function exportData() {
+            console.log("Exportando dados...");
+            try {
+                // Prepara o objeto de backup
+                const backupData = {
+                    clientes: clientes,
+                    transacoes: Array.from(transacoes.entries()) // Converte Map para Array
+                };
+                
+                const dataStr = JSON.stringify(backupData, null, 2); // Formata o JSON
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `gestor_clientes_backup_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                console.log("Exportação concluída.");
+            
+            } catch (error) {
+                console.error("Erro ao exportar dados:", error);
+                showErrorModal("Ocorreu um erro ao gerar o arquivo de backup.");
+            }
+        }
+        
+        window.handleFileSelect = (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = async (e) => {
+                const content = e.target.result;
+                try {
+                    const data = JSON.parse(content);
+                    
+                    // Validação simples do arquivo
+                    if (data && Array.isArray(data.clientes) && Array.isArray(data.transacoes)) {
+                        
+                        if (await showConfirmModal(`Você tem certeza? Isso irá SOBRESCREVER todos os dados atuais pelos dados do arquivo.`)) {
+                            clientes = data.clientes;
+                            transacoes = new Map(data.transacoes); // Converte Array de volta para Map
+                            
+                            saveData();
+                            render();
+                            
+                            console.log("Dados importados com sucesso.");
+                        }
+                        
+                    } else {
+                        throw new Error("Formato de arquivo inválido.");
+                    }
+                    
+                } catch (error) {
+                    console.error("Erro ao importar arquivo:", error);
+                    showErrorModal("Erro ao ler o arquivo. O arquivo pode estar corrompido ou não ser um backup válido.");
+                } finally {
+                    // Limpa o input de arquivo para permitir importar o mesmo arquivo novamente
+                    event.target.value = null;
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // --- Helpers (Modals, Formatos, UI) ---
+        // ... (showModal, hideModal, showTransactionModal, toggleTransactions permanecem iguais) ...
+        function showModal(modalId, contextData = null) {
+            if (modalId === 'nova-transacao-modal' && contextData) {
+                const { clienteId, clienteNome } = contextData;
+                document.getElementById('transacao-cliente-id').value = clienteId;
+                document.getElementById('transacao-cliente-nome').textContent = clienteNome;
+                document.getElementById('transacao-data').valueAsDate = new Date();
+            }
+            
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.remove('hidden');
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) modal.classList.add('hidden');
+        }
+        
+        window.showTransactionModal = (clienteId, clienteNome) => {
+             showModal('nova-transacao-modal', { clienteId, clienteNome });
+        }
+
+        window.toggleTransactions = (clienteId) => {
+            const lista = document.getElementById(`extrato-lista-${clienteId}`);
+            if (lista) {
+                lista.classList.toggle('visible');
+                if (lista.classList.contains('visible') && window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }
+        }
+        
+        // ... (showConfirmModal permanece igual) ...
+        function showConfirmModal(message, isError = false) {
+            return new Promise((resolve) => {
+                const oldModal = document.getElementById('confirm-modal-overlay');
+                if (oldModal) oldModal.remove();
+
+                const overlay = document.createElement('div');
+                overlay.id = 'confirm-modal-overlay';
+                overlay.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 transition-opacity';
+                
+                const modal = document.createElement('div');
+                modal.className = 'bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4 transform transition-all scale-95 opacity-0';
+                
+                const msg = document.createElement('p');
+                msg.className = 'text-lg font-medium text-gray-800 mb-4';
+                msg.textContent = message;
+                modal.appendChild(msg);
+                
+                const btnContainer = document.createElement('div');
+                btnContainer.className = 'flex justify-end gap-3';
+                
+                if (!isError) {
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = 'px-4 py-2 rounded-md text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2';
+                    cancelBtn.textContent = 'Cancelar';
+                    cancelBtn.onclick = () => closeModal(false);
+                    btnContainer.appendChild(cancelBtn);
+                }
+                
+                const confirmBtn = document.createElement('button');
+                const confirmText = isError ? 'OK' : 'Confirmar';
+                const confirmColor = isError ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500' : 'bg-red-600 hover:bg-red-700 focus:ring-red-500';
+                
+                confirmBtn.className = `px-4 py-2 rounded-md text-sm font-medium text-white ${confirmColor} focus:outline-none focus:ring-2 focus:ring-offset-2`;
+                confirmBtn.textContent = isError ? 'OK' : 'Excluir';
+                if(isError) {
+                   confirmBtn.textContent = 'OK';
+                } else {
+                   confirmBtn.textContent = 'Confirmar';
+                   confirmBtn.classList.add('bg-red-600', 'hover:bg-red-700', 'focus:ring-red-500');
+                }
+                
+                confirmBtn.onclick = () => closeModal(true);
+                
+                btnContainer.appendChild(confirmBtn);
+                modal.appendChild(btnContainer);
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+
+                requestAnimationFrame(() => {
+                    overlay.classList.add('opacity-100');
+                    modal.classList.remove('scale-95', 'opacity-0');
+                    modal.classList.add('scale-100', 'opacity-100');
+                });
+                
+                function closeModal(result) {
+                    modal.classList.remove('scale-100', 'opacity-100');
+                    modal.classList.add('scale-95', 'opacity-0');
+                    overlay.classList.remove('opacity-100');
+                    overlay.classList.add('opacity-0');
+                    
+                    setTimeout(() => {
+                        overlay.remove();
+                        resolve(result);
+                    }, 150);
+                }
+            });
+        }
+        
+        // Função de Modal de Erro dedicada
+        function showErrorModal(message) {
+            // Reutiliza o showConfirmModal no modo 'isError'
+            showConfirmModal(message, true);
+        }
+        
+        
+        // ... (Helpers de Formatação permanecem iguais) ...
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+        }
+
+        function formatPercentage(value) {
+            return (value || 0).toFixed(2).replace('.', ',') + '%';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString + 'T00:00:00');
+                if (isNaN(date.getTime())) return dateString;
+                return date.toLocaleDateString('pt-BR');
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        // --- Event Listeners Globais ---
+        
+        // Botões dos Modais
+        document.getElementById('show-novo-cliente-modal').addEventListener('click', () => showModal('novo-cliente-modal'));
+        document.getElementById('close-novo-cliente-modal').addEventListener('click', () => hideModal('novo-cliente-modal'));
+        document.getElementById('close-nova-transacao-modal').addEventListener('click', () => hideModal('nova-transacao-modal'));
+        
+        // Forms
+        document.getElementById('novo-cliente-form').addEventListener('submit', handleNovoClienteSubmit);
+        document.getElementById('nova-transacao-form').addEventListener('submit', handleNovaTransacaoSubmit);
+        
+        // Busca
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            render(); // Re-renderiza os cards com o filtro
+        });
+        
+        // Botões Import/Export
+        document.getElementById('export-button').addEventListener('click', exportData);
+        document.getElementById('import-button').addEventListener('click', () => {
+            // Clica no input de arquivo oculto
+            document.getElementById('import-file-input').click();
+        });
+
+
+        // Inicializa o app
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
+        });
+
+    </script>
+</body>
+</html>
+
