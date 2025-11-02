@@ -336,7 +336,8 @@ const renderClientCard = (client) => {
 };
 
 /**
- * Filtra e exibe os clientes com base nos filtros ativos (texto OU saldo).
+ * Filtra e exibe os clientes com base nos filtros ativos (texto E saldo).
+ * --- ESTA FUNÇÃO FOI CORRIGIDA ---
  */
 const refreshSearchResults = () => {
     const query = domElements.searchInput.value;
@@ -349,63 +350,68 @@ const refreshSearchResults = () => {
         saldo: calculateClientBalance(client.id)
     }));
 
-    let results = []; // Inicia com array VAZIO por padrão
+    // 2. Checar se algum filtro está ativo
+    const isQueryActive = query.length > 0;
+    const isBalanceFilterActive = balanceFilter !== 'todos';
 
-    // 2. Lógica de busca INDEPENDENTE
-    
-    // Se o filtro de saldo for usado (diferente de "todos"), ele tem prioridade.
-    if (balanceFilter !== 'todos') {
+    // 3. Se NENHUM filtro estiver ativo, mostrar mensagem inicial e parar.
+    if (!isQueryActive && !isBalanceFilterActive) {
+        domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Digite um nome ou filtre por saldo e clique em "Buscar" para ver os clientes.</p>';
+        return; // Sair da função
+    }
+
+    // 4. Se pelo menos um filtro está ativo, começar a filtragem
+    // Começa com todos os clientes
+    let results = allClientsWithBalance; 
+
+    // 5. Aplicar filtro de saldo (se ativo)
+    if (isBalanceFilterActive) {
         switch (balanceFilter) {
             case 'positivo':
-                results = allClientsWithBalance.filter(c => c.saldo > 0);
+                results = results.filter(c => c.saldo > 0);
                 break;
             case '0-500':
                 // Saldo positivo até 500
-                results = allClientsWithBalance.filter(c => c.saldo > 0 && c.saldo <= 500);
+                results = results.filter(c => c.saldo > 0 && c.saldo <= 500);
                 break;
             case '501-1000':
-                results = allClientsWithBalance.filter(c => c.saldo >= 501 && c.saldo <= 1000);
+                results = results.filter(c => c.saldo >= 501 && c.saldo <= 1000);
                 break;
             case '1001+':
-                results = allClientsWithBalance.filter(c => c.saldo > 1000);
+                results = results.filter(c => c.saldo > 1000);
                 break;
             case 'negativo':
-                results = allClientsWithBalance.filter(c => c.saldo < 0);
+                results = results.filter(c => c.saldo < 0);
                 break;
             case 'zero':
-                results = allClientsWithBalance.filter(c => c.saldo === 0);
+                results = results.filter(c => c.saldo === 0);
                 break;
         }
     }
-    // Se o filtro de saldo NÃO estiver ativo, usar o filtro de texto (se houver)
-    else if (query.length > 0) {
+
+    // 6. Aplicar filtro de texto (se ativo)
+    // Este filtro age SOBRE o resultado do filtro de saldo (ou sobre todos, se o saldo não foi filtrado)
+    if (isQueryActive) {
         const lowerQuery = query.toLowerCase();
-        results = allClientsWithBalance.filter(client => 
+        results = results.filter(client => 
             client.nome.toLowerCase().includes(lowerQuery) ||
             client.empresa.toLowerCase().includes(lowerQuery) ||
             client.id.toLowerCase().includes(lowerQuery)
         );
     }
-    // Se nenhum filtro estiver ativo (saldo="todos" e query=""), 
-    // 'results' continuará sendo um array vazio [].
 
-    // 3. Renderizar resultados
+    // 7. Renderizar resultados
     if (results.length > 0) {
         results.forEach(client => renderClientCard(client));
     } else {
-        // Mostrar mensagem de "nenhum resultado" ou "estado inicial"
-        if (query.length > 0 || balanceFilter !== 'todos') {
-            // Se o usuário buscou por algo e não achou
-            domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Nenhum cliente encontrado com os filtros aplicados.</p>';
-        } else {
-            // Se a busca está vazia (estado inicial)
-            domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Digite um nome ou filtre por saldo e clique em "Buscar" para ver os clientes.</p>';
-        }
+        // Se chegamos aqui, é porque filtros estavam ativos, mas nada foi encontrado
+        domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Nenhum cliente encontrado com os filtros aplicados.</p>';
     }
     
-    // 4. Re-inicializar ícones Lucide para os novos cards
+    // 8. Re-inicializar ícones Lucide para os novos cards
     lucide.createIcons();
 };
+
 
 /**
  * Manipulador para o envio do formulário de busca.
@@ -701,4 +707,3 @@ const initializePage = async () => {
 
 // Ponto de entrada: Inicia o app quando o HTML estiver pronto.
 document.addEventListener('DOMContentLoaded', initializePage);
-
