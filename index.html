@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-M-^T">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Clientes</title>
     <!-- Tailwind CSS CDN -->
@@ -96,7 +96,7 @@
         <main>
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Buscar Cliente</h2>
             
-            <!-- ATUALIZAÇÃO: Agrupado em um formulário -->
+            <!-- Agrupado em um formulário -->
             <form id="search-form" class="flex flex-col md:flex-row gap-4 mb-4">
                 <!-- Filtro de Texto -->
                 <div class="relative flex-grow">
@@ -125,7 +125,7 @@
                     </div>
                 </div>
 
-                <!-- NOVO: Botão de Busca -->
+                <!-- Botão de Busca -->
                 <div class="flex-shrink-0">
                     <button type="submit" id="btn-search" class="w-full md:w-auto bg-blue-600 text-white px-6 py-3 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center gap-2">
                         <i data-lucide="search" class="w-5 h-5"></i>
@@ -214,7 +214,7 @@
 
                 <!-- Informações Cadastrais -->
                 <h4 class="text-md font-semibold text-gray-800 mb-2">Informações Cadastrais</h4>
-                <div classs="space-y-1 text-sm text-gray-700">
+                <div class="space-y-1 text-sm text-gray-700">
                     <p><strong>Empresa:</strong> <span data-field="empresa"></span></p>
                     <p><strong>Celular:</strong> <span data-field="celular"></span></p>
                     <p><strong>Vendedor:</strong> <span data-field="vendedor"></span></p>
@@ -261,7 +261,6 @@
             <h2 id="io-modal-title" class="text-xl font-bold mb-4">Exportar Transações</h2>
             <p id="io-modal-description" class="text-sm text-gray-600 mb-2">Copie o texto abaixo e salve em um arquivo .json para fazer seu backup.</p>
             <textarea id="io-modal-textarea" readonly class="w-full h-48 p-2 border border-gray-300 rounded-md font-mono text-xs bg-gray-50 no-scrollbar"></textarea>
-            <!-- CORREÇÃO: 'class_' alterado para 'class' -->
             <button id="btn-io-modal-close" class="mt-4 w-full bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700">
                 Fechar
             </button>
@@ -269,7 +268,6 @@
     </div>
 
     <!-- 7. MODAL DE ALERTA (Oculto) -->
-    <!-- NOVO: Modal para substituir os 'alert()' -->
     <div id="alert-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-[60]">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
             <h2 id="alert-modal-title" class="text-xl font-bold mb-4">Aviso</h2>
@@ -289,3 +287,4 @@
     </script>
 </body>
 </html>
+
