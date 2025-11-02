@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-M-^T">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel de Clientes</title>
     <!-- Tailwind CSS CDN -->
@@ -35,14 +35,26 @@
             <div class="flex flex-col sm:flex-row gap-4 mb-4">
                 <div class="flex-1">
                     <label for="date-start" class="block text-sm font-medium text-gray-700">Data Início</label>
-                    <input type="date" id="date-start" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <!-- Aprimoramento Visual: Wrapper com ícone -->
+                    <div class="relative mt-1">
+                        <input type="date" id="date-start" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="calendar" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex-1">
                     <label for="date-end" class="block text-sm font-medium text-gray-700">Data Fim</label>
-                    <input type="date" id="date-end" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <!-- Aprimoramento Visual: Wrapper com ícone -->
+                    <div class="relative mt-1">
+                        <input type="date" id="date-end" class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-lucide="calendar" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex-shrink-0 self-end">
-                    <button id="btn-filter" class="w-full sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    <button id="btn-filter" class="w-full sm:w-auto bg-indigo-600 text-white px-4 py-3 rounded-lg shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         Filtrar
                     </button>
                 </div>
@@ -83,10 +95,32 @@
         <!-- 2. BUSCA DE CLIENTES -->
         <main>
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Buscar Cliente</h2>
-            <div class="relative">
-                <input type="search" id="search-input" placeholder="Digite o nome, empresa ou ID do cliente..." class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+            <!-- NOVO: Contêiner de Filtros de Busca -->
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <!-- Filtro de Texto -->
+                <div class="relative flex-grow">
+                    <input type="search" id="search-input" placeholder="Digite o nome, empresa ou ID..." class="w-full pl-10 pr-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                </div>
+                <!-- NOVO: Filtro de Saldo -->
+                <div class="relative w-full md:w-64">
+                    <select id="filter-saldo" class="w-full pl-10 pr-10 py-3 rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 appearance-none sm:text-sm">
+                        <option value="todos">Filtrar por Saldo...</option>
+                        <option value="positivo">Saldo Positivo (Todos)</option>
+                        <option value="0-500">Saldo até R$ 500</option>
+                        <option value="501-1000">Saldo R$ 501 a R$ 1000</option>
+                        <option value="1001+">Saldo Acima de R$ 1000</option>
+                        <option value="zero">Saldo Zero</option>
+                        <option value="negativo">Saldo Negativo</option>
+                    </select>
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="dollar-sign" class="w-5 h-5 text-gray-400"></i>
+                    </div>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-gray-400"></i>
+                    </div>
                 </div>
             </div>
 
@@ -217,14 +251,26 @@
             <h2 id="io-modal-title" class="text-xl font-bold mb-4">Exportar Transações</h2>
             <p id="io-modal-description" class="text-sm text-gray-600 mb-2">Copie o texto abaixo e salve em um arquivo .json para fazer seu backup.</p>
             <textarea id="io-modal-textarea" readonly class="w-full h-48 p-2 border border-gray-300 rounded-md font-mono text-xs bg-gray-50 no-scrollbar"></textarea>
-            <button id="btn-io-modal-close" class_="mt-4 w-full bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700">
+            <!-- CORREÇÃO: 'class_' alterado para 'class' -->
+            <button id="btn-io-modal-close" class="mt-4 w-full bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700">
                 Fechar
             </button>
         </div>
     </div>
 
-    <!-- 7. SCRIPT PRINCIPAL -->
-    <!-- O próximo arquivo que criaremos -->
+    <!-- 7. MODAL DE ALERTA (Oculto) -->
+    <!-- NOVO: Modal para substituir os 'alert()' -->
+    <div id="alert-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-[60]">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
+            <h2 id="alert-modal-title" class="text-xl font-bold mb-4">Aviso</h2>
+            <p id="alert-modal-message" class="text-gray-700 mb-6">Mensagem de aviso aqui.</p>
+            <button id="btn-alert-modal-close" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- 8. SCRIPT PRINCIPAL -->
     <script src="app.js" type="module"></script>
 
     <!-- Script para inicializar ícones -->
@@ -233,3 +279,4 @@
     </script>
 </body>
 </html>
+
