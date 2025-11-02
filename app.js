@@ -73,10 +73,20 @@ const loadClients = async () => {
             throw new Error(`Erro ao carregar clientes.json: ${response.statusText}`);
         }
         const data = await response.json();
-        allClients = data.clientes || [];
+
+        // Lida com os dois formatos de JSON: {"clientes": [...]} ou just [...]
+        if (Array.isArray(data)) {
+            allClients = data; // Formato: [...]
+        } else if (data && Array.isArray(data.clientes)) {
+            allClients = data.clientes; // Formato: {"clientes": [...]}
+        } else {
+            allClients = [];
+            console.warn('Formato do clientes.json não reconhecido. Esperado {"clientes": [...]} or [...].');
+        }
+
         console.log('Clientes carregados:', allClients);
     } catch (error) {
-        console.error(error);
+        console.error('Erro ao carregar clientes.json:', error);
         showAlert('Erro Grave', 'Falha ao carregar o cadastro de clientes. Verifique o arquivo clientes.json e a conexão.');
     }
 };
@@ -252,7 +262,6 @@ const renderClientCard = (client) => {
     
     // Formatar endereço
     const addr = client.enderecoCompleto;
-    // CORREÇÃO CRÍTICA: Corrigido 'logouro' para 'logradouro'
     elements.enderecoCompleto.textContent = `${addr.logradouro}, ${addr.numero} - ${addr.bairro}, ${addr.cidade} - ${addr.estado}`;
 
     // 4. Preencher dados cadastrais (na seção retrátil)
@@ -342,7 +351,7 @@ const refreshSearchResults = () => {
 
     let results = []; // Inicia com array VAZIO por padrão
 
-    // 2. CORREÇÃO: Lógica de busca INDEPENDENTE
+    // 2. Lógica de busca INDEPENDENTE
     
     // Se o filtro de saldo for usado (diferente de "todos"), ele tem prioridade.
     if (balanceFilter !== 'todos') {
@@ -384,7 +393,7 @@ const refreshSearchResults = () => {
     if (results.length > 0) {
         results.forEach(client => renderClientCard(client));
     } else {
-        // CORREÇÃO: Mostrar mensagem de "nenhum resultado" ou "estado inicial"
+        // Mostrar mensagem de "nenhum resultado" ou "estado inicial"
         if (query.length > 0 || balanceFilter !== 'todos') {
             // Se o usuário buscou por algo e não achou
             domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Nenhum cliente encontrado com os filtros aplicados.</p>';
@@ -667,9 +676,6 @@ const initializePage = async () => {
     loadTransactions();
 
     // Configurar estado inicial da UI
-    // CORREÇÃO: Chamamos refreshAllData, que por sua vez chama
-    // refreshSearchResults, que agora (corretamente) não exibe nada
-    // até que uma busca seja feita.
     refreshAllData(); 
 
     // Configurar Event Listeners
