@@ -253,7 +253,7 @@ const renderClientCard = (client) => {
     
     // Formatar endereço
     const addr = client.enderecoCompleto;
-    elements.enderecoCompleto.textContent = `${addr.logradouro}, ${addr.numero} - ${addr.bairro}, ${addr.cidade} - ${addr.estado}`;
+    elements.enderecoCompleto.textContent = `${addr.logouro}, ${addr.numero} - ${addr.bairro}, ${addr.cidade} - ${addr.estado}`;
 
     // 4. Preencher dados cadastrais (na seção retrátil)
     elements.empresa.textContent = client.empresa;
@@ -327,7 +327,7 @@ const renderClientCard = (client) => {
 };
 
 /**
- * Filtra e exibe os clientes com base nos filtros ativos (texto OU saldo).
+ * Filtra e exibe os clientes com base nos filtros ativos (texto E saldo).
  */
 const refreshSearchResults = () => {
     const query = domElements.searchInput.value;
@@ -340,10 +340,17 @@ const refreshSearchResults = () => {
         saldo: calculateClientBalance(client.id)
     }));
 
-    // 2. Aplicar o filtro que estiver ativo
-    // O usuário quer que os filtros sejam independentes.
-    
-    // Se o filtro de saldo for usado (diferente de "todos"), ele tem prioridade.
+    // 2. ATUALIZAÇÃO: Aplicar filtro de texto (se houver)
+    if (query.length > 0) {
+        const lowerQuery = query.toLowerCase();
+        results = results.filter(client => 
+            client.nome.toLowerCase().includes(lowerQuery) ||
+            client.empresa.toLowerCase().includes(lowerQuery) ||
+            client.id.toLowerCase().includes(lowerQuery)
+        );
+    }
+
+    // 3. ATUALIZAÇÃO: Aplicar filtro de saldo (se houver) sobre os resultados já filtrados
     if (balanceFilter !== 'todos') {
         switch (balanceFilter) {
             case 'positivo':
@@ -367,45 +374,27 @@ const refreshSearchResults = () => {
                 break;
         }
     }
-    // Se o filtro de saldo não estiver ativo, usar o filtro de texto (se houver)
-    else if (query.length > 0) {
-        const lowerQuery = query.toLowerCase();
-        results = results.filter(client => 
-            client.nome.toLowerCase().includes(lowerQuery) ||
-            client.empresa.toLowerCase().includes(lowerQuery) ||
-            client.id.toLowerCase().includes(lowerQuery)
-        );
-    }
-    // Se nenhum filtro estiver ativo (saldo="todos" e query=""), não mostrar nada
-    else {
-        results = []; // Limpa os resultados
-    }
 
     // 4. Renderizar resultados
-    results.forEach(client => renderClientCard(client));
+    if (results.length > 0) {
+        results.forEach(client => renderClientCard(client));
+    } else {
+        // Mostrar mensagem se nenhum resultado for encontrado
+        domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Nenhum cliente encontrado com os filtros aplicados.</p>';
+    }
     
     // Re-inicializar ícones Lucide para os novos cards
     lucide.createIcons();
 };
 
 /**
- * Manipulador para quando o usuário digita na busca de texto.
- * Limpa o filtro de saldo e atualiza os resultados.
+ * ATUALIZAÇÃO: Manipulador para o envio do formulário de busca.
+ * @param {Event} event - Evento de submit.
  */
-const handleTextSearch = () => {
-    domElements.filterSaldo.value = 'todos'; // Reseta o filtro de saldo
-    refreshSearchResults();
+const handleSearchSubmit = (event) => {
+    event.preventDefault(); // Impedir recarregamento da página
+    refreshSearchResults(); // Apenas chama a atualização
 };
-
-/**
- * Manipulador para quando o usuário muda o filtro de saldo.
- * Limpa a busca de texto e atualiza os resultados.
- */
-const handleBalanceFilter = () => {
-    domElements.searchInput.value = ''; // Reseta a busca por texto
-    refreshSearchResults();
-};
-
 
 /**
  * Atualiza o Dashboard e os resultados da busca (se houver).
@@ -419,8 +408,8 @@ const refreshAllData = () => {
     const stats = calculateDashboardStats(startDate, endDate);
     updateDashboardUI(stats);
 
-    // 3. Atualiza os cards da busca (se houver)
-    refreshSearchResults(); // ATUALIZADO
+    // 3. Atualiza os cards da busca
+    refreshSearchResults();
 };
 
 // --- FUNÇÕES DO MODAL (Pop-ups) ---
@@ -631,8 +620,10 @@ const initializePage = async () => {
         fileImporter: document.getElementById('file-importer'),
 
         // Busca
+        searchForm: document.getElementById('search-form'), // ATUALIZAÇÃO
         searchInput: document.getElementById('search-input'),
-        filterSaldo: document.getElementById('filter-saldo'), // NOVO FILTRO
+        filterSaldo: document.getElementById('filter-saldo'),
+        btnSearch: document.getElementById('btn-search'), // ATUALIZAÇÃO
         searchResults: document.getElementById('search-results'),
         
         // Template
@@ -669,13 +660,13 @@ const initializePage = async () => {
 
     // Configurar estado inicial da UI
     refreshAllData(); // Calcula e exibe o dashboard inicial
+    // ATENÇÃO: A linha refreshSearchResults() foi removida daqui, pois refreshAllData() já a chama.
 
     // Configurar Event Listeners
     domElements.btnFilter.addEventListener('click', refreshAllData);
     
-    // ATUALIZADO: Listeners independentes que chamam seus próprios handlers
-    domElements.searchInput.addEventListener('input', handleTextSearch);
-    domElements.filterSaldo.addEventListener('change', handleBalanceFilter);
+    // ATUALIZAÇÃO: Listener de busca agora está no 'submit' do formulário
+    domElements.searchForm.addEventListener('submit', handleSearchSubmit);
     
     // Modal Transação
     domElements.transactionForm.addEventListener('submit', handleTransactionSubmit);
@@ -694,4 +685,3 @@ const initializePage = async () => {
 
 // Ponto de entrada: Inicia o app quando o HTML estiver pronto.
 document.addEventListener('DOMContentLoaded', initializePage);
-
