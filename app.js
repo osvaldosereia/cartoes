@@ -77,7 +77,6 @@ const loadClients = async () => {
         console.log('Clientes carregados:', allClients);
     } catch (error) {
         console.error(error);
-        // ATUALIZADO: Substituído alert() por showAlert()
         showAlert('Erro Grave', 'Falha ao carregar o cadastro de clientes. Verifique o arquivo clientes.json e a conexão.');
     }
 };
@@ -253,7 +252,8 @@ const renderClientCard = (client) => {
     
     // Formatar endereço
     const addr = client.enderecoCompleto;
-    elements.enderecoCompleto.textContent = `${addr.logouro}, ${addr.numero} - ${addr.bairro}, ${addr.cidade} - ${addr.estado}`;
+    // CORREÇÃO CRÍTICA: Corrigido 'logouro' para 'logradouro'
+    elements.enderecoCompleto.textContent = `${addr.logradouro}, ${addr.numero} - ${addr.bairro}, ${addr.cidade} - ${addr.estado}`;
 
     // 4. Preencher dados cadastrais (na seção retrátil)
     elements.empresa.textContent = client.empresa;
@@ -327,7 +327,7 @@ const renderClientCard = (client) => {
 };
 
 /**
- * Filtra e exibe os clientes com base nos filtros ativos (texto E saldo).
+ * Filtra e exibe os clientes com base nos filtros ativos (texto OU saldo).
  */
 const refreshSearchResults = () => {
     const query = domElements.searchInput.value;
@@ -335,60 +335,71 @@ const refreshSearchResults = () => {
     domElements.searchResults.innerHTML = ''; // Limpar resultados anteriores
     
     // 1. Pré-calcular saldos para todos os clientes
-    let results = allClients.map(client => ({
+    let allClientsWithBalance = allClients.map(client => ({
         ...client,
         saldo: calculateClientBalance(client.id)
     }));
 
-    // 2. ATUALIZAÇÃO: Aplicar filtro de texto (se houver)
-    if (query.length > 0) {
+    let results = []; // Inicia com array VAZIO por padrão
+
+    // 2. CORREÇÃO: Lógica de busca INDEPENDENTE
+    
+    // Se o filtro de saldo for usado (diferente de "todos"), ele tem prioridade.
+    if (balanceFilter !== 'todos') {
+        switch (balanceFilter) {
+            case 'positivo':
+                results = allClientsWithBalance.filter(c => c.saldo > 0);
+                break;
+            case '0-500':
+                // Saldo positivo até 500
+                results = allClientsWithBalance.filter(c => c.saldo > 0 && c.saldo <= 500);
+                break;
+            case '501-1000':
+                results = allClientsWithBalance.filter(c => c.saldo >= 501 && c.saldo <= 1000);
+                break;
+            case '1001+':
+                results = allClientsWithBalance.filter(c => c.saldo > 1000);
+                break;
+            case 'negativo':
+                results = allClientsWithBalance.filter(c => c.saldo < 0);
+                break;
+            case 'zero':
+                results = allClientsWithBalance.filter(c => c.saldo === 0);
+                break;
+        }
+    }
+    // Se o filtro de saldo NÃO estiver ativo, usar o filtro de texto (se houver)
+    else if (query.length > 0) {
         const lowerQuery = query.toLowerCase();
-        results = results.filter(client => 
+        results = allClientsWithBalance.filter(client => 
             client.nome.toLowerCase().includes(lowerQuery) ||
             client.empresa.toLowerCase().includes(lowerQuery) ||
             client.id.toLowerCase().includes(lowerQuery)
         );
     }
+    // Se nenhum filtro estiver ativo (saldo="todos" e query=""), 
+    // 'results' continuará sendo um array vazio [].
 
-    // 3. ATUALIZAÇÃO: Aplicar filtro de saldo (se houver) sobre os resultados já filtrados
-    if (balanceFilter !== 'todos') {
-        switch (balanceFilter) {
-            case 'positivo':
-                results = results.filter(c => c.saldo > 0);
-                break;
-            case '0-500':
-                // Saldo positivo até 500
-                results = results.filter(c => c.saldo > 0 && c.saldo <= 500);
-                break;
-            case '501-1000':
-                results = results.filter(c => c.saldo >= 501 && c.saldo <= 1000);
-                break;
-            case '1001+':
-                results = results.filter(c => c.saldo > 1000);
-                break;
-            case 'negativo':
-                results = results.filter(c => c.saldo < 0);
-                break;
-            case 'zero':
-                results = results.filter(c => c.saldo === 0);
-                break;
-        }
-    }
-
-    // 4. Renderizar resultados
+    // 3. Renderizar resultados
     if (results.length > 0) {
         results.forEach(client => renderClientCard(client));
     } else {
-        // Mostrar mensagem se nenhum resultado for encontrado
-        domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Nenhum cliente encontrado com os filtros aplicados.</p>';
+        // CORREÇÃO: Mostrar mensagem de "nenhum resultado" ou "estado inicial"
+        if (query.length > 0 || balanceFilter !== 'todos') {
+            // Se o usuário buscou por algo e não achou
+            domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Nenhum cliente encontrado com os filtros aplicados.</p>';
+        } else {
+            // Se a busca está vazia (estado inicial)
+            domElements.searchResults.innerHTML = '<p class="text-gray-500 italic text-center">Digite um nome ou filtre por saldo e clique em "Buscar" para ver os clientes.</p>';
+        }
     }
     
-    // Re-inicializar ícones Lucide para os novos cards
+    // 4. Re-inicializar ícones Lucide para os novos cards
     lucide.createIcons();
 };
 
 /**
- * ATUALIZAÇÃO: Manipulador para o envio do formulário de busca.
+ * Manipulador para o envio do formulário de busca.
  * @param {Event} event - Evento de submit.
  */
 const handleSearchSubmit = (event) => {
@@ -409,6 +420,7 @@ const refreshAllData = () => {
     updateDashboardUI(stats);
 
     // 3. Atualiza os cards da busca
+    // (Isto irá re-executar a busca atual, atualizando os saldos)
     refreshSearchResults();
 };
 
@@ -481,7 +493,6 @@ const handleTransactionSubmit = (event) => {
     const date = domElements.modalDate.value;
 
     if (!type || !clientId || !value || !date) {
-        // ATUALIZADO: Substituído alert() por showAlert()
         showAlert('Campos Incompletos', 'Por favor, preencha todos os campos.');
         return;
     }
@@ -528,7 +539,6 @@ const handleExport = () => {
         showIOModal('export', data);
     } catch (error) {
         console.error('Erro ao exportar:', error);
-        // ATUALIZADO: Substituído alert() por showAlert()
         showAlert('Erro', 'Ocorreu um erro ao gerar o backup.');
     }
 };
@@ -575,14 +585,12 @@ const handleImportFile = (event) => {
                 
                 // Recarrega a página inteira para refletir
                 hideIOModal();
-                // ATUALIZADO: Substituído alert() por showAlert()
                 showAlert('Importação Concluída', 'Transações importadas com sucesso! A página será recarregada.');
                 // Adiciona um listener ao botão OK do novo alerta para recarregar a página
                 domElements.btnAlertModalClose.onclick = () => location.reload();
 
             } catch (error) {
                 console.error('Erro ao importar:', error);
-                // ATUALIZADO: Substituído alert() por showAlert()
                 showAlert('Falha na Importação', `Falha na importação: ${error.message}`);
                 // Restaura o botão
                 btnClone.textContent = 'Fechar';
@@ -620,10 +628,10 @@ const initializePage = async () => {
         fileImporter: document.getElementById('file-importer'),
 
         // Busca
-        searchForm: document.getElementById('search-form'), // ATUALIZAÇÃO
+        searchForm: document.getElementById('search-form'), 
         searchInput: document.getElementById('search-input'),
         filterSaldo: document.getElementById('filter-saldo'),
-        btnSearch: document.getElementById('btn-search'), // ATUALIZAÇÃO
+        btnSearch: document.getElementById('btn-search'), 
         searchResults: document.getElementById('search-results'),
         
         // Template
@@ -647,7 +655,7 @@ const initializePage = async () => {
         ioModalTextarea: document.getElementById('io-modal-textarea'),
         btnIoModalClose: document.getElementById('btn-io-modal-close'),
 
-        // NOVO: Modal Alerta
+        // Modal Alerta
         alertModal: document.getElementById('alert-modal'),
         alertModalTitle: document.getElementById('alert-modal-title'),
         alertModalMessage: document.getElementById('alert-modal-message'),
@@ -659,13 +667,15 @@ const initializePage = async () => {
     loadTransactions();
 
     // Configurar estado inicial da UI
-    refreshAllData(); // Calcula e exibe o dashboard inicial
-    // ATENÇÃO: A linha refreshSearchResults() foi removida daqui, pois refreshAllData() já a chama.
+    // CORREÇÃO: Chamamos refreshAllData, que por sua vez chama
+    // refreshSearchResults, que agora (corretamente) não exibe nada
+    // até que uma busca seja feita.
+    refreshAllData(); 
 
     // Configurar Event Listeners
     domElements.btnFilter.addEventListener('click', refreshAllData);
     
-    // ATUALIZAÇÃO: Listener de busca agora está no 'submit' do formulário
+    // Listener de busca agora está no 'submit' do formulário
     domElements.searchForm.addEventListener('submit', handleSearchSubmit);
     
     // Modal Transação
@@ -678,10 +688,11 @@ const initializePage = async () => {
     domElements.fileImporter.addEventListener('change', handleImportFile);
     domElements.btnIoModalClose.addEventListener('click', hideIOModal);
 
-    // NOVO: Modal Alerta
+    // Modal Alerta
     // Configura o botão OK padrão para apenas fechar o modal
     domElements.btnAlertModalClose.addEventListener('click', hideAlertModal);
 };
 
 // Ponto de entrada: Inicia o app quando o HTML estiver pronto.
 document.addEventListener('DOMContentLoaded', initializePage);
+
