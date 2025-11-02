@@ -77,7 +77,8 @@ const loadClients = async () => {
         console.log('Clientes carregados:', allClients);
     } catch (error) {
         console.error(error);
-        alert('Falha grave ao carregar o cadastro de clientes. Verifique o arquivo clientes.json e a conexão.');
+        // ATUALIZADO: Substituído alert() por showAlert()
+        showAlert('Erro Grave', 'Falha ao carregar o cadastro de clientes. Verifique o arquivo clientes.json e a conexão.');
     }
 };
 
@@ -261,7 +262,8 @@ const renderClientCard = (client) => {
     elements.comissaoPct.textContent = `${client.comissaoPct.toFixed(1).replace('.', ',')}`;
 
     // 5. Calcular saldo e pegar transações
-    const clientBalance = calculateClientBalance(client.id);
+    // OTIMIZAÇÃO: O saldo agora é pré-calculado e passado no objeto 'client'
+    const clientBalance = client.saldo; 
     elements.saldo.textContent = formatCurrency(clientBalance);
 
     const clientTransactions = getTransactionsForClient(client.id)
@@ -325,29 +327,85 @@ const renderClientCard = (client) => {
 };
 
 /**
- * Filtra e exibe os clientes com base na busca.
- * @param {string} query - O texto digitado na busca.
+ * Filtra e exibe os clientes com base nos filtros ativos (texto OU saldo).
  */
-const performSearch = (query) => {
+const refreshSearchResults = () => {
+    const query = domElements.searchInput.value;
+    const balanceFilter = domElements.filterSaldo.value;
     domElements.searchResults.innerHTML = ''; // Limpar resultados anteriores
     
-    if (query.length === 0) {
-        // Se a busca estiver vazia, não mostrar ninguém
-        return;
+    // 1. Pré-calcular saldos para todos os clientes
+    let results = allClients.map(client => ({
+        ...client,
+        saldo: calculateClientBalance(client.id)
+    }));
+
+    // 2. Aplicar o filtro que estiver ativo
+    // O usuário quer que os filtros sejam independentes.
+    
+    // Se o filtro de saldo for usado (diferente de "todos"), ele tem prioridade.
+    if (balanceFilter !== 'todos') {
+        switch (balanceFilter) {
+            case 'positivo':
+                results = results.filter(c => c.saldo > 0);
+                break;
+            case '0-500':
+                // Saldo positivo até 500
+                results = results.filter(c => c.saldo > 0 && c.saldo <= 500);
+                break;
+            case '501-1000':
+                results = results.filter(c => c.saldo >= 501 && c.saldo <= 1000);
+                break;
+            case '1001+':
+                results = results.filter(c => c.saldo > 1000);
+                break;
+            case 'negativo':
+                results = results.filter(c => c.saldo < 0);
+                break;
+            case 'zero':
+                results = results.filter(c => c.saldo === 0);
+                break;
+        }
+    }
+    // Se o filtro de saldo não estiver ativo, usar o filtro de texto (se houver)
+    else if (query.length > 0) {
+        const lowerQuery = query.toLowerCase();
+        results = results.filter(client => 
+            client.nome.toLowerCase().includes(lowerQuery) ||
+            client.empresa.toLowerCase().includes(lowerQuery) ||
+            client.id.toLowerCase().includes(lowerQuery)
+        );
+    }
+    // Se nenhum filtro estiver ativo (saldo="todos" e query=""), não mostrar nada
+    else {
+        results = []; // Limpa os resultados
     }
 
-    const lowerQuery = query.toLowerCase();
-    const results = allClients.filter(client => 
-        client.nome.toLowerCase().includes(lowerQuery) ||
-        client.empresa.toLowerCase().includes(lowerQuery) ||
-        client.id.toLowerCase().includes(lowerQuery)
-    );
-
+    // 4. Renderizar resultados
     results.forEach(client => renderClientCard(client));
     
     // Re-inicializar ícones Lucide para os novos cards
     lucide.createIcons();
 };
+
+/**
+ * Manipulador para quando o usuário digita na busca de texto.
+ * Limpa o filtro de saldo e atualiza os resultados.
+ */
+const handleTextSearch = () => {
+    domElements.filterSaldo.value = 'todos'; // Reseta o filtro de saldo
+    refreshSearchResults();
+};
+
+/**
+ * Manipulador para quando o usuário muda o filtro de saldo.
+ * Limpa a busca de texto e atualiza os resultados.
+ */
+const handleBalanceFilter = () => {
+    domElements.searchInput.value = ''; // Reseta a busca por texto
+    refreshSearchResults();
+};
+
 
 /**
  * Atualiza o Dashboard e os resultados da busca (se houver).
@@ -362,10 +420,30 @@ const refreshAllData = () => {
     updateDashboardUI(stats);
 
     // 3. Atualiza os cards da busca (se houver)
-    performSearch(domElements.searchInput.value);
+    refreshSearchResults(); // ATUALIZADO
 };
 
 // --- FUNÇÕES DO MODAL (Pop-ups) ---
+
+/**
+ * Exibe um modal de alerta customizado.
+ * @param {string} title - O título do alerta.
+ * @param {string} message - A mensagem do alerta.
+ */
+const showAlert = (title, message) => {
+    domElements.alertModalTitle.textContent = title;
+    domElements.alertModalMessage.textContent = message;
+    domElements.alertModal.classList.remove('hidden');
+    domElements.btnAlertModalClose.focus();
+};
+
+/**
+ * Esconde o modal de alerta.
+ */
+const hideAlertModal = () => {
+    domElements.alertModal.classList.add('hidden');
+};
+
 
 /**
  * Exibe o modal para adicionar uma nova transação.
@@ -414,7 +492,8 @@ const handleTransactionSubmit = (event) => {
     const date = domElements.modalDate.value;
 
     if (!type || !clientId || !value || !date) {
-        alert('Por favor, preencha todos os campos.');
+        // ATUALIZADO: Substituído alert() por showAlert()
+        showAlert('Campos Incompletos', 'Por favor, preencha todos os campos.');
         return;
     }
 
@@ -460,7 +539,8 @@ const handleExport = () => {
         showIOModal('export', data);
     } catch (error) {
         console.error('Erro ao exportar:', error);
-        alert('Ocorreu um erro ao gerar o backup.');
+        // ATUALIZADO: Substituído alert() por showAlert()
+        showAlert('Erro', 'Ocorreu um erro ao gerar o backup.');
     }
 };
 
@@ -506,12 +586,15 @@ const handleImportFile = (event) => {
                 
                 // Recarrega a página inteira para refletir
                 hideIOModal();
-                alert('Transações importadas com sucesso! A página será recarregada.');
-                location.reload();
+                // ATUALIZADO: Substituído alert() por showAlert()
+                showAlert('Importação Concluída', 'Transações importadas com sucesso! A página será recarregada.');
+                // Adiciona um listener ao botão OK do novo alerta para recarregar a página
+                domElements.btnAlertModalClose.onclick = () => location.reload();
 
             } catch (error) {
                 console.error('Erro ao importar:', error);
-                alert(`Falha na importação: ${error.message}`);
+                // ATUALIZADO: Substituído alert() por showAlert()
+                showAlert('Falha na Importação', `Falha na importação: ${error.message}`);
                 // Restaura o botão
                 btnClone.textContent = 'Fechar';
                 btnClone.classList.remove('bg-red-600', 'hover:bg-red-700');
@@ -549,6 +632,7 @@ const initializePage = async () => {
 
         // Busca
         searchInput: document.getElementById('search-input'),
+        filterSaldo: document.getElementById('filter-saldo'), // NOVO FILTRO
         searchResults: document.getElementById('search-results'),
         
         // Template
@@ -571,6 +655,12 @@ const initializePage = async () => {
         ioModalDescription: document.getElementById('io-modal-description'),
         ioModalTextarea: document.getElementById('io-modal-textarea'),
         btnIoModalClose: document.getElementById('btn-io-modal-close'),
+
+        // NOVO: Modal Alerta
+        alertModal: document.getElementById('alert-modal'),
+        alertModalTitle: document.getElementById('alert-modal-title'),
+        alertModalMessage: document.getElementById('alert-modal-message'),
+        btnAlertModalClose: document.getElementById('btn-alert-modal-close'),
     };
 
     // Carregar dados
@@ -582,7 +672,10 @@ const initializePage = async () => {
 
     // Configurar Event Listeners
     domElements.btnFilter.addEventListener('click', refreshAllData);
-    domElements.searchInput.addEventListener('input', (e) => performSearch(e.target.value));
+    
+    // ATUALIZADO: Listeners independentes que chamam seus próprios handlers
+    domElements.searchInput.addEventListener('input', handleTextSearch);
+    domElements.filterSaldo.addEventListener('change', handleBalanceFilter);
     
     // Modal Transação
     domElements.transactionForm.addEventListener('submit', handleTransactionSubmit);
@@ -593,7 +686,12 @@ const initializePage = async () => {
     domElements.btnImportTransactions.addEventListener('click', handleImportClick);
     domElements.fileImporter.addEventListener('change', handleImportFile);
     domElements.btnIoModalClose.addEventListener('click', hideIOModal);
+
+    // NOVO: Modal Alerta
+    // Configura o botão OK padrão para apenas fechar o modal
+    domElements.btnAlertModalClose.addEventListener('click', hideAlertModal);
 };
 
 // Ponto de entrada: Inicia o app quando o HTML estiver pronto.
 document.addEventListener('DOMContentLoaded', initializePage);
+
